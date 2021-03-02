@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 	if(access(map, F_OK) == 0){
 		in = fopen(map, "r");
 	} else{
-		fprintf(stderr, "Plik %s nie istnieje!\n", map);
+		fprintf(stderr, "File %s doesn`t exist!\n", map);
 		return EXIT_FAILURE;
 	}
 
@@ -65,20 +65,18 @@ int main(int argc, char **argv) {
 	int rows = -1;
 	int cols = -1;
 	if( fscanf(in, "%d %d", &rows, &cols) != 2 ){
-		fprintf(stderr, "Cos poszlo nie tak, pewnie przez niepoprawny format pliku\n");
+		fprintf(stderr, "Invalid format of file (in the first line)\n");
 		fclose(in);
 		return EXIT_FAILURE;
 	}	
 	
 	if( rows == -1 || cols == -1 ){
 		fclose(in);
-		fprintf(stderr, "Niepoprawny format pliku %s, zajrzyj do instrukcji\n", map);
+		fprintf(stderr, "Invalid format of file %s\n", map);
 		return EXIT_FAILURE;
 	}
-	//printf("%d %d\n", rows, cols);
 	//int **primaryGen = getPrimaryGen(rows, cols, in);
 	fclose(in);
-
 	//Od tego miejsca możecie dodawać dalsze funkcje, ale jeszcze nie skończyłem wczytywania tablicy
 
     return EXIT_SUCCESS;
