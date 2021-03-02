@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
     int iterations = 100;
     char *dirname = "life";
     char *map = "noname";
+    int i;
 
     while ((opt = getopt(argc, argv, "m:i:d:")) != -1) {
         switch (opt) {
@@ -48,8 +49,8 @@ int main(int argc, char **argv) {
     }
     
     if (strcmp(map, "noname") == 0) {
-        printf("Wrong syntax, name of map-file is required.\n");
-        printf(help, progname, progname);
+        fprintf(stderr, "Wrong syntax, name of map-file is required.\n");
+        fprintf(stderr, help, progname, progname);
         return EXIT_FAILURE;
     }
 	
@@ -76,10 +77,11 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 	//printf("%d %d\n", rows, cols);
-	//int **primaryGen = getPrimaryGen(rows, cols, in);
+	//int **generation = getPrimaryGen(rows, cols, in);
 	fclose(in);
 
-	//Od tego miejsca możecie dodawać dalsze funkcje, ale jeszcze nie skończyłem wczytywania tablicy
+    for (i = 0; i < iterations; i++)
+        //play(generation, rows, cols);
 
     return EXIT_SUCCESS;
 }
