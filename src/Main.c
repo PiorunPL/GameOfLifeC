@@ -1,17 +1,65 @@
-#include<stdio.h>
+int main( int argc, char** argv ){
+
+
+	return 0;
+}
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <getopt.h>
 #include<unistd.h> //do funkcji access
 
 int **getPrimaryGen(int rows, int cols, FILE *in);
 int getRows(FILE *in);
 int getCols(FILE *in);
 
-int main( int argc, char** argv ){
-	if( argc<2 ){
-		fprintf(stderr, "Nie podano pliku wejsciowego\n");
-		return 1;
-	}
+char *help = 
+"NAME\n"
+"   %s - simulation of Conway's Game of Life\n\n"
+"SYNOPSIS\n"
+"   %s -m map-file [options]\n\n"
+"OPTIONS\n"
+"   -i number-of-generations,   by default it is 100\n"
+"   -d name-of-directory,       directory, where BMP files are stored,\n"
+"                               by default it is 'life'\n\n"
+"AUTHORS\n"
+"   Jakub Maciejewski, Michal Ziober, Sebastian Gorka, students of\n"
+"   Warsaw University of Technology.\n"
+"   This program is JIMP2 coursework.\n";
 
-	FILE *in;
+
+int main(int argc, char **argv) {
+    char *progname = argv[0];
+    int opt;
+    int iterations = 100;
+    char *dirname = "life";
+    char *map = "noname";
+
+    while (opt = getopt(argc, argv, "m:i:d:") != -1) {
+        switch (opt) {
+        case 'm':
+            map = optarg;
+            break;
+        case 'i':
+           iterations = atoi(optarg); 
+            break;
+        case 'd':
+            dirname = optarg;
+            break;
+        default:
+            printf(help, progname, progname);
+            return EXIT_FAILURE;
+            break;
+        }
+    }
+    
+    if (strcmp(map, "noname") == 0) {
+        printf("Wrong syntax, name of map-file is required.\n");
+        printf(help, progname, progname);
+        return EXIT_FAILURE;
+    }
+	
+    FILE *in;
 	if( access(argv[1], F_OK ) == 0 ){
 		in = fopen(argv[1], "r");
 	} else{
@@ -39,5 +87,5 @@ int main( int argc, char** argv ){
 
 	//Od tego miejsca możecie dodawać dalsze funkcje, ale jeszcze nie skończyłem wczytywania tablicy
 
-	return 0;
+    return EXIT_SUCCESS;
 }
