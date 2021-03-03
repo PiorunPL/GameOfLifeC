@@ -4,7 +4,7 @@
 #include <getopt.h>
 #include <unistd.h> //do funkcji access
 
-#include "Game.h"
+#include "game.h"
 
 int **getPrimaryGen(int rows, int cols, FILE *in);
 int getRows(FILE *in);
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
     FILE *in;
 	if(access(map, F_OK) == 0){
 		in = fopen(map, "r");
-	} else{
+	} else {
 		fprintf(stderr, "File %s doesn`t exist!\n", map);
 		return EXIT_FAILURE;
 	}
@@ -78,6 +78,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Invalid format of file %s\n", map);
 		return EXIT_FAILURE;
 	}
+
 	int **generation = getPrimaryGen(rows, cols, in);
 	fclose(in);
 
