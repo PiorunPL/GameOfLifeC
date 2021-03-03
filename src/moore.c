@@ -12,8 +12,8 @@ int countNeighbours(int **generation, int rows, int cols, int posR, int posC) {
     
     if (posR == 0) startR = 0;
     if (posC == 0) startC = 0;
-    if (posR == rows - 1) finR = rows - 1;
-    if (posC == cols - 1) finC = cols - 1;
+    if (posR == rows - 1) finR = 0;
+    if (posC == cols - 1) finC = 0;
 
     for (r = startR; r <= finR; r++)
         for (c = startC; c <= finC; c++) {
@@ -21,9 +21,9 @@ int countNeighbours(int **generation, int rows, int cols, int posR, int posC) {
                 continue;
             else if(generation[posR + r][posC + c] == 1)
                 aliveNeighbours++;
-            else if ((generation[posR + r][posC + c] == 2) && (r <= 0 && c >= 0))
+            else if (((r >= 0 && c >= 0) || r > 0) && (generation[posR + r][posC + c] == 2))
                 aliveNeighbours++;
-            else if ((generation[posR + r][posC + c] == 3) && (r >= 0 && c <= 0))
+            else if (((r <= 0 && c <= 0) || r < 0) && (generation[posR + r][posC + c] == 3))
                 aliveNeighbours++;
         }
 
