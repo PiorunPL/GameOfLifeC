@@ -15,10 +15,10 @@ vpath $(SRC)
 #   BIN FILES
 #
 
-$(BIN)moore: $(OBJ)main.o $(OBJ)FilesOperations.o $(OBJ)game.o $(OBJ)moore.o
+$(BIN)moore: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o
 	$(CC) $(BINOPTS) 
 
-$(BIN)neumann: $(OBJ)main.o $(OBJ)FilesOperations.o $(OBJ)game.o $(OBJ)neumann.o
+$(BIN)neumann: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)neumann.o
 	$(CC) $(BINOPTS)
 
 #
@@ -28,7 +28,7 @@ $(BIN)neumann: $(OBJ)main.o $(OBJ)FilesOperations.o $(OBJ)game.o $(OBJ)neumann.o
 $(OBJ)main.o: $(SRC)main.c $(SRC)game.h
 	$(CC) $(OBJOPTS) 
 
-$(OBJ)FilesOperations.o: $(SRC)FilesOperations.c
+$(OBJ)filesops.o: $(SRC)filesops.c
 	$(CC) $(OBJOPTS)
 
 $(OBJ)game.o: $(SRC)game.c $(SRC)nbrhood.h
