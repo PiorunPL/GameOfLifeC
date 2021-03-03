@@ -16,9 +16,11 @@ int aliveNeighbours(int **generation, int rows, int cols, int posR, int posC) {
 
     for (r = startR; r <= finR; r++)
         for (c = startC; c <= finC; c++)
-            if (generation[posR + r][posC + c] == 1 || generation[posR + r][posC + c] == 3)
-                aliveNeighbours++;
-
+            if (generation[posR + r][posC + c] == 1) aliveNeighbours++;
+            else if (generation[posR + r][posC + c] == 2)
+                if (r <= 0 && c >= 0) aliveNeighbours++;
+            else if (generation[posR + r][posC + c] == 3)
+                if (r >= 0 && c <= 0) aliveNeighbours++;
     return aliveNeighbours;
 }
 

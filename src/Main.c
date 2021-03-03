@@ -4,6 +4,8 @@
 #include <getopt.h>
 #include <unistd.h> //do funkcji access
 
+#include "Game.h"
+
 int **getPrimaryGen(int rows, int cols, FILE *in);
 int getRows(FILE *in);
 int getCols(FILE *in);
@@ -76,11 +78,11 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Invalid format of file %s\n", map);
 		return EXIT_FAILURE;
 	}
-	//int **generation = getPrimaryGen(rows, cols, in);
+	int **generation = getPrimaryGen(rows, cols, in);
 	fclose(in);
 
     for (i = 0; i < iterations; i++)
-        //play(generation, rows, cols);
+        play(generation, rows, cols);
 
     return EXIT_SUCCESS;
 }
