@@ -16,17 +16,17 @@ vpath $(SRC)
 #   BIN FILES
 #
 
-$(BIN)moore: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o
+$(BIN)moore: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o
 	$(CC) $(BINOPTS) 
 
-$(BIN)neumann: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)neumann.o
+$(BIN)neumann: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)neumann.o $(OBJ)fileOut.o
 	$(CC) $(BINOPTS)
 
 #
 #   OBJECT FILES
 #
 
-$(OBJ)main.o: $(SRC)main.c $(SRC)game.h
+$(OBJ)main.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h
 	$(CC) $(OBJOPTS) 
 
 $(OBJ)filesops.o: $(SRC)filesops.c
@@ -41,17 +41,20 @@ $(OBJ)moore.o: $(SRC)moore.c
 $(OBJ)neumann.o: $(SRC)neumann.c
 	$(CC) $(OBJOPTS)
 
+$(OBJ)fileOut.o: $(SRC)fileOut.c
+	$(CC) $(OBJOPTS)
+
 #
 #   DEBUG
 #
 
-$(BIN)dmoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o
+$(BIN)dmoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o
 	$(CC) $(BINOPTS) $(DEBUGOPTS)
 
-$(BIN)dneumann: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dneumann.o
+$(BIN)dneumann: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dneumann.o $(OBJ)dfileOut.o
 	$(CC) $(BINOPTS) $(DEBUGOPTS)
 
-$(OBJ)dmain.o: $(SRC)main.c $(SRC)game.h
+$(OBJ)dmain.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
 
 $(OBJ)dfilesops.o: $(SRC)filesops.c
@@ -64,6 +67,9 @@ $(OBJ)dmoore.o: $(SRC)moore.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
 
 $(OBJ)dneumann.o: $(SRC)neumann.c
+	$(CC) $(OBJOPTS) $(DEBUGOPTS)
+
+$(OBJ)dfileOut.o: $(SRC)fileOut.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
 
 #

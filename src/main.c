@@ -5,6 +5,7 @@
 #include <unistd.h> //do funkcji access
 
 #include "game.h"
+#include "fileOut.h"
 
 int **getPrimaryGen(int rows, int cols, FILE *in);
 int getRows(FILE *in);
@@ -81,9 +82,14 @@ int main(int argc, char **argv) {
 
 	int **generation = getPrimaryGen(rows, cols, in);
 	fclose(in);
+    creatingBMP(generation, rows, cols, 0, iterations, dirname);
 
     for (i = 0; i < iterations; i++)
+    {
         play(generation, rows, cols);
+        creatingBMP(generation, rows, cols, i + 1, iterations, dirname);
+    }
+        
 
     return EXIT_SUCCESS;
 }
