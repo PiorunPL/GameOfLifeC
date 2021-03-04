@@ -49,7 +49,7 @@ $(OBJ)fileOut.o: $(SRC)fileOut.c
 #
 
 $(BIN)dmoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o
-	$(CC) $(BINOPTS) $(DEBUGOPTS)
+	$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
 
 $(BIN)dneumann: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dneumann.o $(OBJ)dfileOut.o
 	$(CC) $(BINOPTS) $(DEBUGOPTS)
@@ -70,7 +70,7 @@ $(OBJ)dneumann.o: $(SRC)neumann.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
 
 $(OBJ)dfileOut.o: $(SRC)fileOut.c
-	$(CC) $(OBJOPTS) $(DEBUGOPTS)
+	$(CC) $(OBJOPTS) $(DEBUGOPTS) -lm
 
 #
 #   CLEAN

@@ -1,9 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <dirent.h>
-#include <errno.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <string.h>
 #include <math.h>
+
+#include "fileOut.h"
 
 void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, char *dirName)
 {
@@ -33,26 +36,19 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
     fileName[n + 3] = 'p';
     fileName[n + 4] = '\0';
 
-    DIR *dir = opendir(dirName);
+    struct stat stats;
+    stat(dirName, &stats);
 
-    if (dir)
+    if (S_ISDIR(stats.st_mode))
     {
         //folder exists
-        closedir(dir);
     }
-    else if (ENOENT == errno)
+    else 
     {
-        //folder does not exists
         mkdir(dirName, 0777);
     }
-    else
-    {
-        //opening folder failed
-        printf("Wystapił problem z folderem docelowym!");
-        return;
-    }
 
-    FILE *file = fopen(strcat(strcat(dirName, '/'),fileName), "w");
+    FILE *file = fopen(strcat(strcat(dirName, "/"),fileName), "w");
 
     //BM
     fputc(0x42, file);
