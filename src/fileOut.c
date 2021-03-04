@@ -189,14 +189,6 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
         }
     }
 
-    for(i=0;i<row;i++)
-    {
-        int j;
-        for(j=0;j<col;j++)
-            printf("%d", map[i][j]);
-        printf("\n");
-    }
-
     fclose(file);
     free(hex);
     free(fileName);
@@ -224,15 +216,3 @@ void decimalToHex(int number, char *result)
         result[i--] = 0;
     }
 }
-
-int hexDigitsFunc(int number)
-{
-    int hexDigits = 0;
-    while (number != 0)
-    {
-        number = number / 16;
-        hexDigits++;
-    }
-    return hexDigits;
-}
-
