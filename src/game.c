@@ -1,4 +1,22 @@
 #include "nbrhood.h"
+
+/**
+ *  This fuction converts generation, which consists of numbers 0, 1, 2, 3,
+ *  into form that consists of numbers 0 and 1 only.
+ */
+int **genoutputformat(int **generation, int rows, int cols) {
+    int r, c;
+
+    for (r = 0; r < rows; r++) {
+        for (c = 0; c < cols; c++) {
+            if (generation[r][c] == 2) generation[r][c] = 1;
+            else if (generation[r][c] == 3) generation[r][c] = 0;
+        }
+    }
+
+    return generation;
+}
+
 /**
  *  This function simulates and returns one generation.
  *  States of cell:
@@ -30,18 +48,7 @@ int **play(int **generation, int rows, int cols) {
         }
     }
 
-    return generation;
-}
-
-int **genoutputformat(int **generation, int rows, int cols) {
-    int r, c;
-
-    for (r = 0; r < rows; r++) {
-        for (c = 0; c < cols; c++) {
-            if (generation[r][c] == 2) generation[r][c] = 1;
-            else if (generation[r][c] == 3) generation[r][c] = 0;
-        }
-    }
+    genoutputformat(generation, rows, cols);
 
     return generation;
 }
