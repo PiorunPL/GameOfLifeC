@@ -20,7 +20,7 @@ $(BIN)moore: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)file
 	$(CC) $(BINOPTS) -lm
 
 $(BIN)neumann: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)neumann.o $(OBJ)fileOut.o
-	$(CC) $(BINOPTS)
+	$(CC) $(BINOPTS) -lm
 
 #
 #   OBJECT FILES
