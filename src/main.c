@@ -11,6 +11,10 @@ int **getPrimaryGen(int rows, int cols, FILE *in);
 int getRows(FILE *in);
 int getCols(FILE *in);
 
+#ifdef DEBUG
+void printar(int **array, int rows, int cols);
+#endif
+
 char *help = 
 "NAME\n"
 "   %s - simulation of Conway's Game of Life\n\n"
@@ -91,9 +95,26 @@ int main(int argc, char **argv) {
 
     for (i = 0; i < iterations; i++)
     {
+
+#ifdef DEBUG
+        printar(generation, rows, cols);
+#endif
         play(generation, rows, cols);
         creatingBMP(generation, rows, cols, i + 1, iterations, dirname);
     }
 
     return EXIT_SUCCESS;
 }
+
+#ifdef DEBUG
+void printar(int **array, int rows, int cols) {
+    int r, c;
+
+    for (r = 0; r < rows; r++) {
+        for (c = 0; c < cols; c++)
+            printf("%d ", array[r][c]);
+        printf("\n");
+    }
+    printf("\n");
+}
+#endif

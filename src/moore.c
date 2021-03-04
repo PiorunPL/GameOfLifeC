@@ -1,4 +1,4 @@
-/**
+/** FLAT - game field is flat surface
  *  This function counts and returns cell's (row: posR, column: posC) alive neighbours,
  *  using rules od Moore neighourhood.
  *  If the cell is on the border of the map, function is teating cells outside map 
