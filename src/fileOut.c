@@ -179,11 +179,11 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
             {
                if(map[row-i-1][k] == 1)
                     {
-                        fputc(0xff, file);
+                        fputc(0x00, file);
                     }
                     else
                     {
-                        fputc(0x00,file);
+                        fputc(0xff,file);
                     }
             }
         }
