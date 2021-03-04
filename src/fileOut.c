@@ -58,9 +58,8 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
         mkdir(dirName, 0777);
     }
 
-    char *path = malloc(sizeof(char)*(strlen(dirName)+strlen(fileName)+1));
-    path = "";
-    strcat(path, dirName);
+    char *path = malloc(sizeof(char)*(strlen(dirName)+strlen(fileName)+2));
+    strcpy(path, dirName);
     strcat(path, "/");
     strcat(path, fileName);
 
@@ -179,7 +178,7 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
                 int l = 0;
                 for (l = 0; l < 8; l++)
                 {
-                    fputc(map[row][col], file);
+                    fputc(map[i][k], file);
                 }
             }
         }
