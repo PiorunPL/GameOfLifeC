@@ -92,6 +92,8 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
 
     //offset where the pixel array can be found
     fputc(0x3e, file);
+    for(i=0; i<3;i++)
+        fputc(0x00, file);
 
     //Number of bytes in DIB header
     fputc(0x28, file);
@@ -175,13 +177,24 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
             int k = 0;
             for (k = 0; k < col; k++)
             {
-                int l = 0;
-                for (l = 0; l < 8; l++)
-                {
-                    fputc(map[i][k], file);
-                }
+               if(map[row-i-1][k] == 1)
+                    {
+                        fputc(0xff, file);
+                    }
+                    else
+                    {
+                        fputc(0x00,file);
+                    }
             }
         }
+    }
+
+    for(i=0;i<row;i++)
+    {
+        int j;
+        for(j=0;j<col;j++)
+            printf("%d", map[i][j]);
+        printf("\n");
     }
 
     fclose(file);
@@ -208,7 +221,7 @@ void decimalToHex(int number, char *result)
 
     while (i >= 0)
     {
-        result[i--] = '0';
+        result[i--] = 0;
     }
 }
 
@@ -222,3 +235,4 @@ int hexDigitsFunc(int number)
     }
     return hexDigits;
 }
+
