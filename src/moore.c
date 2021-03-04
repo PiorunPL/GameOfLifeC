@@ -15,7 +15,7 @@ int countNeighbours(int **generation, int rows, int cols, int posR, int posC) {
     if (posR == rows - 1) finR = 0;
     if (posC == cols - 1) finC = 0;
 
-    for (r = startR; r <= finR; r++)
+    for (r = startR; r <= finR; r++) {
         for (c = startC; c <= finC; c++) {
             if (r == 0 && c == 0)
                 continue;
@@ -26,6 +26,7 @@ int countNeighbours(int **generation, int rows, int cols, int posR, int posC) {
             else if (((r <= 0 && c <= 0) || r < 0) && (generation[posR + r][posC + c] == 3))
                 aliveNeighbours++;
         }
+    }
 
     return aliveNeighbours;
 }
