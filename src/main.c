@@ -19,7 +19,9 @@ char *help =
 "OPTIONS\n"
 "   -i number-of-generations,   by default it is 100\n"
 "   -d name-of-directory,       directory, where BMP files are stored,\n"
-"                               by default it is 'life'\n\n"
+"                               by default it is 'life'\n"
+"   -o name-of-output-file      file, where the last generation is saved\n"
+"                               in the map-file format\n\n"
 "AUTHORS\n"
 "   Jakub Maciejewski, Michal Ziober, Sebastian Gorka, students of\n"
 "   Warsaw University of Technology.\n"
@@ -31,9 +33,10 @@ int main(int argc, char **argv) {
     int iterations = 100;
     char *dirname = "life";
     char *map = "noname";
+    char *output = "map";
     int i;
 
-    while ((opt = getopt(argc, argv, "m:i:d:")) != -1) {
+    while ((opt = getopt(argc, argv, "m:i:d:o:")) != -1) {
         switch (opt) {
         case 'm':
             map = optarg;
@@ -44,6 +47,8 @@ int main(int argc, char **argv) {
         case 'd':
             dirname = optarg;
             break;
+        case 'o':
+            output = optarg;
         default:
             printf(help, progname, progname);
             return EXIT_FAILURE;
@@ -89,7 +94,6 @@ int main(int argc, char **argv) {
         play(generation, rows, cols);
         creatingBMP(generation, rows, cols, i + 1, iterations, dirname);
     }
-        
 
     return EXIT_SUCCESS;
 }
