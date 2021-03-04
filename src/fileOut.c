@@ -14,7 +14,16 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
     int iterationWorking = iteration;
 
     int n = log10(maxIteration) + 1;
-    int m = log10(iteration) + 1;
+    int m;
+    if(iteration == 0)
+    {
+        m = 1;      
+    }   
+    else
+    {
+        m = log10(iteration) + 1;
+    }
+        
 
     char *fileName = malloc(sizeof(char) * n + 5);
 
