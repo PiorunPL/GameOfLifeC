@@ -33,7 +33,7 @@ int **play(int **generation, int rows, int cols) {
     return generation;
 }
 
-int genoutformat(int **generation, int rows, int cols) {
+int **genoutformat(int **generation, int rows, int cols) {
     int r, c;
 
     for (r = 0; r < rows; r++) {
