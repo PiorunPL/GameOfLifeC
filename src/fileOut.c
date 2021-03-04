@@ -15,6 +15,7 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
 
     int n = log10(maxIteration) + 1;
     int m;
+
     if(iteration == 0)
     {
         m = 1;      
@@ -57,7 +58,13 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
         mkdir(dirName, 0777);
     }
 
-    FILE *file = fopen(strcat(strcat(dirName, "/"),fileName), "w");
+    char *path = malloc(sizeof(char)*(strlen(dirName)+strlen(fileName)+1));
+    path = "";
+    strcat(path, dirName);
+    strcat(path, "/");
+    strcat(path, fileName);
+
+    FILE *file = fopen(path, "w");
 
     //BM
     fputc(0x42, file);
