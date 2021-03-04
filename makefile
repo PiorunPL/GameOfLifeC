@@ -16,8 +16,8 @@ vpath $(SRC)
 #   BIN FILES
 #
 
-$(BIN)moore: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o
-	$(CC) $(BINOPTS) 
+$(BIN)moore: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o 
+	$(CC) $(BINOPTS) -lm
 
 $(BIN)neumann: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)neumann.o $(OBJ)fileOut.o
 	$(CC) $(BINOPTS)
@@ -42,7 +42,7 @@ $(OBJ)neumann.o: $(SRC)neumann.c
 	$(CC) $(OBJOPTS)
 
 $(OBJ)fileOut.o: $(SRC)fileOut.c
-	$(CC) $(OBJOPTS)
+	$(CC) $(OBJOPTS) -lm
 
 #
 #   DEBUG

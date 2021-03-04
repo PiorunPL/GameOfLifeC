@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <string.h>
+#include <math.h>
 
 void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, char *dirName)
 {
@@ -51,7 +52,7 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
         return;
     }
 
-    FILE *file = open(strcat(strcat(dirName, '/'),fileName), "w");
+    FILE *file = fopen(strcat(strcat(dirName, '/'),fileName), "w");
 
     //BM
     fputc(0x42, file);
