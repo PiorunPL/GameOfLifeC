@@ -16,15 +16,14 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
     int n = log10(maxIteration) + 1;
     int m;
 
-    if(iteration == 0)
+    if (iteration == 0)
     {
-        m = 1;      
-    }   
+        m = 1;
+    }
     else
     {
         m = log10(iteration) + 1;
     }
-        
 
     char *fileName = malloc(sizeof(char) * n + 5);
 
@@ -53,12 +52,12 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
     {
         //folder exists
     }
-    else 
+    else
     {
         mkdir(dirName, 0777);
     }
 
-    char *path = malloc(sizeof(char)*(strlen(dirName)+strlen(fileName)+2));
+    char *path = malloc(sizeof(char) * (strlen(dirName) + strlen(fileName) + 2));
     strcpy(path, dirName);
     strcat(path, "/");
     strcat(path, fileName);
@@ -70,7 +69,8 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
     fputc(0x4d, file);
 
     //Size of the BMP file (in bytes)
-    int BMPSize = 62 + 8 * pixelNumber;
+    int RowSize = ((col * 8 + 31) / 32) * 4;
+    int BMPSize = 62 + 8 * row * RowSize;
 
     char *hex = malloc(sizeof(char) * 8);
     decimalToHex(BMPSize, hex);
@@ -92,7 +92,7 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
 
     //offset where the pixel array can be found
     fputc(0x3e, file);
-    for(i=0; i<3;i++)
+    for (i = 0; i < 3; i++)
         fputc(0x00, file);
 
     //Number of bytes in DIB header
@@ -137,7 +137,7 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
         fputc(0x00, file);
 
     //size of the raw bitmap
-    int sizeRawBMP = 8 * pixelNumber;
+    int sizeRawBMP = 8 * row * RowSize;
     decimalToHex(sizeRawBMP, hex);
 
     hexByte[0] = 16 * hex[6] + hex[7];
@@ -160,9 +160,11 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
     for (i = 0; i < 4; i++)
         fputc(0x00, file);
 
-    //colour 1 - black
-    for (i = 0; i < 4; i++)
-        fputc(0x00, file);
+    //colour 1 - green
+    fputc(0x00,file);
+    fputc(0xff,file);
+    fputc(0x00,file);
+    fputc(0x00,file);
 
     //colour 2 - white
     for (i = 0; i < 3; i++)
@@ -175,16 +177,23 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
         for (j = 0; j < 8; j++)
         {
             int k = 0;
-            for (k = 0; k < col; k++)
+            for (k = 0; k < RowSize; k++)
             {
-               if(map[row-i-1][k] == 1)
+                if (k >= col)
+                {
+                    fputc(0x00, file);
+                }
+                else
+                {
+                    if (map[row - i - 1][k] == 1)
                     {
                         fputc(0x00, file);
                     }
                     else
                     {
-                        fputc(0xff,file);
+                        fputc(0xff, file);
                     }
+                }
             }
         }
     }
