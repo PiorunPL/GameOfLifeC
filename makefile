@@ -2,25 +2,32 @@
 #   VARIABLES
 #
 
-OBJ = bin/obj/
+OBJ = obj/
 BIN = bin/
 SRC = src/
 CC = cc
 OBJOPTS = -I $(SRC) -c -o $@ $<
-BINOPTS = $^ -o $@ -L src
+BINOPTS = $^ -o $@
 DEBUGOPTS = -ggdb
 
 vpath $(SRC)
 
 #
+#   BFORE COMPILATION
+#
+
+dirs:
+	mkdir $(BIN) $(OBJ)
+
+#
 #   BIN FILES
 #
 
-$(BIN)moore: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o 
-	$(CC) $(BINOPTS) -lm
+$(BIN)moore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o
+	-$(CC) $(BINOPTS) -lm
 
-$(BIN)neumann: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)neumann.o $(OBJ)fileOut.o
-	$(CC) $(BINOPTS) -lm
+$(BIN)neumann: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)neumann.o $(OBJ)fileOut.o
+	-$(CC) $(BINOPTS) -lm
 
 #
 #   OBJECT FILES
@@ -48,11 +55,11 @@ $(OBJ)fileOut.o: $(SRC)fileOut.c
 #   DEBUG
 #
 
-$(BIN)dmoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o
-	$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
+$(BIN)dmoore: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o
+	-$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
 
-$(BIN)dneumann: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dneumann.o $(OBJ)dfileOut.o
-	$(CC) $(BINOPTS) $(DEBUGOPTS)
+$(BIN)dneumann: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dneumann.o $(OBJ)dfileOut.o
+	-$(CC) $(BINOPTS) $(DEBUGOPTS)
 
 $(OBJ)dmain.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
@@ -79,4 +86,4 @@ $(OBJ)dfileOut.o: $(SRC)fileOut.c
 .PHONY: clean
 
 clean:
-	rm -f $(BIN){*,.*} $(OBJ)*.o
+	rm -rd $(BIN) $(OBJ)
