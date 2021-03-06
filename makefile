@@ -23,10 +23,10 @@ dirs:
 #   BIN FILES
 #
 
-$(BIN)moore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o
+$(BIN)moore: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o
 	-$(CC) $(BINOPTS) -lm
 
-$(BIN)neumann: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)neumann.o $(OBJ)fileOut.o
+$(BIN)neumann: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)neumann.o $(OBJ)fileOut.o
 	-$(CC) $(BINOPTS) -lm
 
 #
@@ -86,4 +86,4 @@ $(OBJ)dfileOut.o: $(SRC)fileOut.c
 .PHONY: clean
 
 clean:
-	rm -rd $(BIN) $(OBJ)
+	rm -rd $(BIN) $(OBJ) life
