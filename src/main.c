@@ -8,9 +8,7 @@
 #include "fileOut.h"
 
 int **getPrimaryGen(int rows, int cols, FILE *in);
-int getRows(FILE *in);
-int getCols(FILE *in);
-
+void saveGen(int **gen, int rows, int cols, char *filename);
 char *help = 
 "NAME\n"
 "   %s - simulation of Conway's Game of Life\n\n"
@@ -21,7 +19,8 @@ char *help =
 "   -d name-of-directory,       directory, where BMP files are stored,\n"
 "                               by default it is 'life'\n"
 "   -o name-of-output-file      file, where the last generation is saved\n"
-"                               in the map-file format\n\n"
+"                               in the map-file format,\n"
+"                               by default it is 'data/lastgens/map'\n\n"
 "AUTHORS\n"
 "   Jakub Maciejewski, Michal Ziober, Sebastian Gorka, students of\n"
 "   Warsaw University of Technology.\n"
@@ -33,7 +32,7 @@ int main(int argc, char **argv) {
     int iterations = 100;
     char *dirname = "life";
     char *map = "noname";
-    char *output = "map";
+    char *output = "data/lastgens/map";
     int i;
 
     while ((opt = getopt(argc, argv, "m:i:d:o:")) != -1) {
@@ -49,6 +48,7 @@ int main(int argc, char **argv) {
             break;
         case 'o':
             output = optarg;
+            break;
         default:
             printf(help, progname, progname);
             return EXIT_FAILURE;
@@ -94,6 +94,6 @@ int main(int argc, char **argv) {
         play(generation, rows, cols);
         creatingBMP(generation, rows, cols, i + 1, iterations, dirname);
     }
-
+	saveGen(generation, rows, cols, output);
     return EXIT_SUCCESS;
 }
