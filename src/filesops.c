@@ -2,6 +2,16 @@
 #include <ctype.h> //do funkcji isspace
 #include <stdlib.h>
 #include <unistd.h>
+
+int isFileExists(char *path){
+	FILE *file = fopen(path, "r");
+	if(file ==NULL){
+		printf("File %s doesn`t exists!\n", path);
+		return 1;
+	fclose(file);
+	return 0;
+	}
+}
 /*
 * Fnkcja wczytuje układ punktów żywych i martwych z podanego pliku
 * rows - ilość wierszy

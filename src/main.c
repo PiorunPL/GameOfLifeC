@@ -9,6 +9,8 @@
 
 int **getPrimaryGen(int rows, int cols, FILE *in);
 void saveGen(int **gen, int rows, int cols, char *filename);
+int isFileExists(char *path);
+
 char *help = 
 "NAME\n"
 "   %s - simulation of Conway's Game of Life\n\n"
@@ -63,10 +65,9 @@ int main(int argc, char **argv) {
     }
 	
     FILE *in;
-	if(access(map, F_OK) == 0){
+	if( isFileExists(map) == 0 ){
 		in = fopen(map, "r");
 	} else {
-		fprintf(stderr, "File %s doesn`t exist!\n", map);
 		return EXIT_FAILURE;
 	}
 
