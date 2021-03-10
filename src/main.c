@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <getopt.h>
-#include <unistd.h> //do funkcji access
 
 #include "game.h"
 #include "fileOut.h"

@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/*
+* Funkcja sprawdza czy plik o podanej ścieżce istnieje
+* *path - nazwa sprawdzanego pliku
+*/
 int isFileExists(char *path){
 	FILE *file = fopen(path, "r");
 	if(file ==NULL){
@@ -12,6 +16,8 @@ int isFileExists(char *path){
 	return 0;
 	}
 }
+
+
 /*
 * Fnkcja wczytuje układ punktów żywych i martwych z podanego pliku
 * rows - ilość wierszy
