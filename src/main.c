@@ -63,12 +63,17 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 	
-    FILE *in;
-	if( isFileExists(map) == 0 ){
-		in = fopen(map, "r");
-	} else {
+
+
+	FILE *in;
+	//Sprawdzanie czy plik istnieje
+	if( (in = fopen(map, "r")) != NULL){
+		//File exists
+	}else{
+		fprintf(stderr, "Input file %s doesn`t exist!\n", map);
 		return EXIT_FAILURE;
 	}
+
 
 	//rows i cols są usatwione na -1, aby w razie błędu został wyłapany
 	int rows = -1;
