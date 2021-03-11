@@ -200,7 +200,8 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
 
     fclose(file);
     free(hex);
-    free(fileName);
+    free(fileName);	
+    free(path);
 }
 
 void decimalToHex(int number, char *result)

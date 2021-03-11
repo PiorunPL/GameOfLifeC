@@ -100,5 +100,13 @@ int main(int argc, char **argv) {
         creatingBMP(generation, rows, cols, i + 1, iterations, dirname);
     }
 	saveGen(generation, rows, cols, output);
+
+	//Czyszczenie zalokanego miejsca na tablicę	
+	int it = 0;
+	for(it = rows-1; it >= 0; it--){
+		free(generation[it]);
+	}
+
     return EXIT_SUCCESS;
 }
+
