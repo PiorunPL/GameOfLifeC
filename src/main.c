@@ -8,7 +8,6 @@
 
 int **getPrimaryGen(int rows, int cols, FILE *in);
 void saveGen(int **gen, int rows, int cols, char *filename);
-int isFileExists(char *path);
 
 char *help = 
 "NAME\n"

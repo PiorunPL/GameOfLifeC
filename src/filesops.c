@@ -29,6 +29,13 @@ int **getPrimaryGen(int rows, int cols, FILE *in){
 	
 	//Chodzenie po pliku i ewentualne szukanie błędów
 	while( (c = fgetc(in)) != EOF ){
+		//Sprawdzenie czy faktyczna ilość wierszy nie jest większa niż zadeklarowana
+		if(countLines+1 > rows){
+			fprintf(stderr, "Declared number of rows are not the same as rows in input file! (Declared < real)\n");
+			exit(7);
+		}
+
+		//Sprawdzenie czym jest wczytany znak, dla nowej linii inkrementuje licznik linii, dla spacji leci dalej, dla 0 lub 1 przypisuje do tablicy 
 		if( isspace(c) ){
 			if( c == '\n' ){
 				countLines++;
