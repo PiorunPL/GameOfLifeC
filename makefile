@@ -7,27 +7,34 @@ BIN = bin/
 SRC = src/
 CC = cc
 OBJOPTS = -I $(SRC) -c -o $@ $<
-BINOPTS = $^ -o $@
-DEBUGOPTS = -ggdb
+BINOPTS = -o $@ -L src
+DEBUGOPTS = -ggdb -DDEBUG
 
 vpath $(SRC)
 
+all: $(BIN)moore $(BIN)tormoore
+
 #
-#   BFORE COMPILATION
+#   BEFORE COMPILATION
 #
 
 dirs:
-	mkdir $(BIN) $(OBJ)
+ifeq (,$(wildcard ./bin))
+	mkdir ./bin
+endif
+ifeq (,$(wildcard ./obj))
+	mkdir ./obj
+endif
 
 #
 #   BIN FILES
 #
 
-$(BIN)moore: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o
-	-$(CC) $(BINOPTS) -lm
+$(BIN)moore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o 
+	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o -lm
 
-$(BIN)neumann: $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)neumann.o $(OBJ)fileOut.o
-	-$(CC) $(BINOPTS) -lm
+$(BIN)tormoore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o 
+	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o -lm
 
 #
 #   OBJECT FILES
@@ -51,15 +58,27 @@ $(OBJ)neumann.o: $(SRC)neumann.c
 $(OBJ)fileOut.o: $(SRC)fileOut.c
 	$(CC) $(OBJOPTS) -lm
 
+$(OBJ)tormoore.o: $(SRC)/torus/moore.c
+	$(CC) $(OBJOPTS)
+
+$(OBJ)torneumann.o: $(SRC)/torus/neumann.c
+	$(CC) $(OBJOPTS)
+
 #
 #   DEBUG
 #
 
-$(BIN)dmoore: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o
-	-$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
+$(BIN)dmoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o
+	$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
 
-$(BIN)dneumann: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dneumann.o $(OBJ)dfileOut.o
-	-$(CC) $(BINOPTS) $(DEBUGOPTS)
+$(BIN)dneumann: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dneumann.o $(OBJ)dfileOut.o
+	$(CC) $(BINOPTS) $(DEBUGOPTS)
+
+$(BIN)dtormoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o 
+	$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
+
+$(BIN)dtorneumann: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtorneumann.o $(OBJ)dfileOut.o
+	$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
 
 $(OBJ)dmain.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
@@ -79,6 +98,12 @@ $(OBJ)dneumann.o: $(SRC)neumann.c
 $(OBJ)dfileOut.o: $(SRC)fileOut.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS) -lm
 
+$(OBJ)dtormoore.o: $(SRC)/torus/moore.c
+	$(CC) $(OBJOPTS) $(DEBUGOPTS)
+
+$(OBJ)dtorneumann.o: $(SRC)/torus/neumann.c
+	$(CC) $(OBJOPTS) $(DEBUGOPTS)
+
 #
 #   CLEAN
 #
@@ -86,4 +111,9 @@ $(OBJ)dfileOut.o: $(SRC)fileOut.c
 .PHONY: clean
 
 clean:
-	rm -rd $(BIN) $(OBJ) life
+ifneq (,$(wildcard ./bin))
+	rm -rd ./bin
+endif
+ifneq (,$(wildcard ./obj))
+	rm -rd ./obj
+endif
