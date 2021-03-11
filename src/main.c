@@ -106,6 +106,7 @@ int main(int argc, char **argv) {
 	for(it = rows-1; it >= 0; it--){
 		free(generation[it]);
 	}
+	free(generation);
 
     return EXIT_SUCCESS;
 }
