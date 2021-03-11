@@ -2,7 +2,7 @@
 #   VARIABLES
 #
 
-OBJ = bin/obj/
+OBJ = obj/
 BIN = bin/
 SRC = src/
 CC = cc
