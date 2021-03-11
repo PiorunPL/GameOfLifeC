@@ -4,6 +4,18 @@
 #include <unistd.h>
 
 /*
+* Funkcja służy do czyszczenia zalokowanego miejsca po tablicy
+* int **tab - tablica do wyczyszczenia
+* int rows - ilosć wierszy w tej tablicy
+*/
+void cleanTab(int **tab, int rows){
+	int it;
+	for( it = rows-1; it>= 0; it--)
+		free(tab[it]);
+	free(tab);
+}
+
+/*
 * Fnkcja wczytuje układ punktów żywych i martwych z podanego pliku
 * rows - ilość wierszy
 * cols - ilość kolumn
@@ -32,6 +44,8 @@ int **getPrimaryGen(int rows, int cols, FILE *in){
 		//Sprawdzenie czy faktyczna ilość wierszy nie jest większa niż zadeklarowana
 		if(countLines+1 > rows){
 			fprintf(stderr, "Declared number of rows are not the same as rows in input file! (Declared < real)\n");
+			cleanTab(tabOfInt, rows);
+			fclose(in);
 			exit(7);
 		}
 
@@ -41,6 +55,8 @@ int **getPrimaryGen(int rows, int cols, FILE *in){
 				countLines++;
 				if( countColumns != cols ){
 					fprintf(stderr, "Declared size and number of elements are not the same\n");
+					cleanTab(tabOfInt, rows);
+					fclose(in);
 					exit(6);
 				}
 				countColumns = 0;
@@ -50,6 +66,8 @@ int **getPrimaryGen(int rows, int cols, FILE *in){
 		}
 		else if( c != '0' && c != '1' ){
 			fprintf(stderr, "Incorrect value in input file!\n");
+			cleanTab(tabOfInt, rows);
+			fclose(in);
 			exit(4);
 		}
 		else{
@@ -61,6 +79,8 @@ int **getPrimaryGen(int rows, int cols, FILE *in){
 
 	if( countLines != rows ){
 		fprintf(stderr, "Declared size and number of elements are not the same\n");
+		cleanTab(tabOfInt, rows);
+		fclose(in);
 		exit(6);
 	}
 

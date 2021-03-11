@@ -8,6 +8,7 @@
 
 int **getPrimaryGen(int rows, int cols, FILE *in);
 void saveGen(int **gen, int rows, int cols, char *filename);
+void cleanTab(int **tab, int rows);
 
 char *help = 
 "NAME\n"
@@ -100,12 +101,8 @@ int main(int argc, char **argv) {
     }
 	saveGen(generation, rows, cols, output);
 
-	//Czyszczenie zalokanego miejsca na tablicę	
-	int it = 0;
-	for(it = rows-1; it >= 0; it--){
-		free(generation[it]);
-	}
-	free(generation);
+
+	cleanTab(generation, rows);
 
     return EXIT_SUCCESS;
 }
