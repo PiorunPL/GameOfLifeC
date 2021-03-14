@@ -8,9 +8,25 @@
 
 #include "fileOut.h"
 
-void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, char *dirName)
+//checking if dir exist, if not creating new one
+void checkDIR(char * dirName)
 {
-    int pixelNumber = row * col;
+    struct stat stats;
+    stat(dirName, &stats);
+
+    if (S_ISDIR(stats.st_mode))
+    {
+        //folder exists
+    }
+    else
+    {  
+        mkdir(dirName, 0777);
+    }
+}
+
+//Creating BMP File with specific name based on iteration
+char * createBMP(int iteration, int maxIteration, char *dirName)
+{
     int iterationWorking = iteration;
 
     int n = log10(maxIteration) + 1;
@@ -45,22 +61,21 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
     fileName[n + 3] = 'p';
     fileName[n + 4] = '\0';
 
-    struct stat stats;
-    stat(dirName, &stats);
-
-    if (S_ISDIR(stats.st_mode))
-    {
-        //folder exists
-    }
-    else
-    {
-        mkdir(dirName, 0777);
-    }
-
     char *path = malloc(sizeof(char) * (strlen(dirName) + strlen(fileName) + 2));
     strcpy(path, dirName);
     strcat(path, "/");
     strcat(path, fileName);
+
+    free(fileName);
+
+    return path;
+}
+
+//Writing into BMP File
+void editBMP(int **map, int row, int col, char * path)
+{
+    int pixelNumber = row * col;
+   
 
     FILE *file = fopen(path, "w");
 
@@ -80,6 +95,8 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
     hexByte[1] = 16 * hex[4] + hex[5];
     hexByte[2] = 16 * hex[2] + hex[3];
     hexByte[3] = 16 * hex[0] + hex[1];
+
+    int i;
 
     for (i = 0; i < 4; i++)
     {
@@ -171,6 +188,7 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
         fputc(0xff, file);
     fputc(0x00, file);
 
+    //Including Map of Game of Life into the file(making squares 8x8 pixels)
     for (i = 0; i < row; i++)
     {
         int j = 0;
@@ -200,10 +218,10 @@ void creatingBMP(int **map, int row, int col, int iteration, int maxIteration, c
 
     fclose(file);
     free(hex);
-    free(fileName);	
     free(path);
 }
 
+//changing decimal number into hex number
 void decimalToHex(int number, char *result)
 {
     int remainder;

@@ -92,12 +92,16 @@ int main(int argc, char **argv) {
 
 	int **generation = getPrimaryGen(rows, cols, in);
 	fclose(in);
-    creatingBMP(generation, rows, cols, 0, iterations, dirname);
+
+    checkDIR(dirname);
+    char * path = createBMP(0,iterations, dirname);
+    editBMP(generation, rows, cols, path);
 
     for (i = 0; i < iterations; i++)
     {
         play(generation, rows, cols);
-        creatingBMP(generation, rows, cols, i + 1, iterations, dirname);
+        path = createBMP(i+1, iterations, dirname);
+        editBMP(generation, rows, cols, path);
     }
 	saveGen(generation, rows, cols, output);
 
