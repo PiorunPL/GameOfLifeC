@@ -9,6 +9,7 @@
 int **getPrimaryGen(int rows, int cols, FILE *in);
 void saveGen(int **gen, int rows, int cols, char *filename);
 void cleanTab(int **tab, int rows);
+int **randmap(int rows, int cols);   
 
 char *help = 
 "NAME\n"
@@ -34,9 +35,11 @@ int main(int argc, char **argv) {
     char *dirname = "life";
     char *map = "noname";
     char *output = "data/lastgens/map";
+    char *randdimensions = NULL;
     int i;
+	int rows = -1, cols = -1;
 
-    while ((opt = getopt(argc, argv, "m:i:d:o:")) != -1) {
+    while ((opt = getopt(argc, argv, "m:i:d:o:r:")) != -1) {
         switch (opt) {
         case 'm':
             map = optarg;
@@ -50,64 +53,78 @@ int main(int argc, char **argv) {
         case 'o':
             output = optarg;
             break;
+        case 'r':
+            randdimensions = optarg;
+            break;
         default:
-            printf(help, progname, progname);
+            fprintf(stderr, help, progname, progname);
             return EXIT_FAILURE;
             break;
         }
     }
-    
-    if (strcmp(map, "noname") == 0) {
-        fprintf(stderr, "Wrong syntax, name of map-file is required.\n");
+
+    if (randdimensions != NULL) {
+        if (sscanf(randdimensions, "%dx%d", &rows, &cols) != 2) {
+            fprintf(stderr, "Wrong syntax, after '-r' parameter should be\n"
+                            "[number of rows]x[number of columns] instead of '%s'.\n\n", randdimensions);
+            fprintf(stderr, help, progname, progname);
+            return EXIT_FAILURE;
+        }
+    }
+
+    int **generation;
+
+    if ((rows > 0 && cols > 0) && strcmp(map, "noname") == 0) {
+        generation = randmap(rows, cols);
+    }
+    else if ((rows == -1 && cols == -1) && strcmp(map, "noname") == 0) {
+        fprintf(stderr, "Wrong syntax: map-file or random map dimensions are required.\n\n");
         fprintf(stderr, help, progname, progname);
         return EXIT_FAILURE;
     }
-	
+    else if ((rows <= 0 && cols <= 0) && strcmp(map, "noname") == 0) {
+        fprintf(stderr, "Wrong dimensions: %dx%d\n\n", rows, cols);
+        fprintf(stderr, help, progname, progname);
+        return EXIT_FAILURE;
+    }
+    else if ((rows == -1 && cols == -1) && strcmp(map, "noname") != 0) {
+        FILE *in;
 
+        if ((in = fopen(map, "r")) == NULL) {
+            fprintf(stderr, "Input file %s doesn't exist!\n\n", map);
+            fprintf(stderr, help, progname, progname);
+            return EXIT_FAILURE;
+        }
 
-	FILE *in;
-	//Sprawdzanie czy plik istnieje
-	if( (in = fopen(map, "r")) != NULL){
-		//File exists
-	}else{
-		fprintf(stderr, "Input file %s doesn`t exist!\n", map);
-		return EXIT_FAILURE;
-	}
+        if (fscanf(in, "%d %d", &rows, &cols) != 2) {
+            fprintf(stderr, "Invalid format of file (in the first line)\n\n");
+            fprintf(stderr, help, progname, progname);
+            fclose(in);
+            return EXIT_FAILURE;
+        }	
 
-
-	//rows i cols są usatwione na -1, aby w razie błędu został wyłapany
-	int rows = -1;
-	int cols = -1;
-	if( fscanf(in, "%d %d", &rows, &cols) != 2 ){
-		fprintf(stderr, "Invalid format of file (in the first line)\n");
-		fclose(in);
-		return EXIT_FAILURE;
-	}	
-	
-	if( rows == -1 || cols == -1 ){
-		fclose(in);
-		fprintf(stderr, "Invalid format of file %s\n", map);
-		return EXIT_FAILURE;
-	}
-
-	int **generation = getPrimaryGen(rows, cols, in);
-	fclose(in);
+        generation = getPrimaryGen(rows, cols, in);
+        fclose(in);
+    }
+    else {
+        fprintf(stderr, "Wrong syntax: map-file or random map dimensions are required.\n\n");
+        fprintf(stderr, help, progname, progname);
+        return EXIT_FAILURE;
+    }
 
     checkDIR(dirname);
-    char * path = createBMP(0,iterations, dirname);
+    char *path = createBMP(0,iterations, dirname);
     editBMP(generation, rows, cols, path);
 
-    for (i = 0; i < iterations; i++)
-    {
+    for (i = 0; i < iterations; i++) {
         play(generation, rows, cols);
         path = createBMP(i+1, iterations, dirname);
         editBMP(generation, rows, cols, path);
     }
-	saveGen(generation, rows, cols, output);
 
+	saveGen(generation, rows, cols, output);
 
 	cleanTab(generation, rows);
 
     return EXIT_SUCCESS;
 }
-

@@ -30,11 +30,11 @@ endif
 #   BIN FILES
 #
 
-$(BIN)moore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o 
-	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o -lm
+$(BIN)moore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o $(OBJ)randmap.o
+	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o -lm $(OBJ)randmap.o
 
-$(BIN)tormoore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o 
-	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o -lm
+$(BIN)tormoore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o $(OBJ)randmap.o
+	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o -lm $(OBJ)randmap.o
 
 #
 #   OBJECT FILES
@@ -58,15 +58,20 @@ $(OBJ)fileOut.o: $(SRC)fileOut.c
 $(OBJ)tormoore.o: $(SRC)tormoore.c
 	$(CC) $(OBJOPTS)
 
+$(OBJ)randmap.o: $(SRC)randmap.c
+	$(CC) $(OBJOPTS)
+
 #
 #   DEBUG
 #
 
-$(BIN)dmoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o
-	$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
+debug: $(BIN)dmoore $(BIN)dtormoore
 
-$(BIN)dtormoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o 
-	$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
+$(BIN)dmoore: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o $(OBJ)drandmap.o
+	$(CC) $(BINOPTS) $(DEBUGOPTS) $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o -lm $(OBJ)drandmap.o
+
+$(BIN)dtormoore: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o $(OBJ)drandmap.o
+	$(CC) $(BINOPTS) $(DEBUGOPTS) $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o -lm $(OBJ)drandmap.o
 
 $(OBJ)dmain.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
@@ -84,6 +89,9 @@ $(OBJ)dfileOut.o: $(SRC)fileOut.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS) -lm
 
 $(OBJ)dtormoore.o: $(SRC)tormoore.c
+	$(CC) $(OBJOPTS) $(DEBUGOPTS)
+
+$(OBJ)drandmap.o: $(SRC)randmap.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
 
 #
