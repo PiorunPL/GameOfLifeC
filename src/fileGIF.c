@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "fileOut.h"
 #include "fileGIF.h"
@@ -74,13 +75,13 @@ typedef struct LZWList
 {
     int index;
     char * code;
-    LZWList_t * next;
+    struct LZWList * next;
 }LZWList_t;
 
 typedef struct streamList
 {
     int number;
-    streamList_t * next;
+    struct streamList * next;
 } streamList_t;
 
 static GIFHeader_t * head = NULL;
@@ -105,29 +106,55 @@ void addToStreamList(int number)
     streamTail->next = NULL;
 }
 
-void mainCompressingFuction(char ** map)
+void clearStreamList()
+{
+    streamList_t * p = streamHead;
+
+    while(p!=NULL)
+    {
+        streamHead = streamHead->next;
+        free(p);
+        p = streamHead;
+    }
+    streamTail = NULL;
+}
+
+void mainCompressingFuction(int ** map)
 {
     initStreamList();
-    initLZWList();
+    //initLZWList();
+
+    
 
     char * buffor1 = malloc(sizeof(char)*4096);
 
-    int i, j, k;
+    int i, j, k, l;
     k = 0;
     int index1, index2;
     for(i = 0; i < head->ID.imageHeight;i++ )
     {
-        for(j = 0; j < head->ID.imageWidth; i++)
+        for(j = 0; j < head->ID.imageWidth; j++)
         {
-            buffor1[k] = map[i][j];
+            buffor1[k] = map[i][j] + '0';
             buffor1[++k] = '\0';
             index1 = searchForCode(buffor1);
             int isLast = 0;
             if(index1 == 5000) //NOT FOUND
             {
+                int length = strlen(buffor1);
+                char * buffor2 = malloc(sizeof(char)*length);
+
+                for(l = 0; l < length-1; l++)
+                    buffor2[l] = buffor1[l];
+                buffor2[length-1] = '\0';
                 isLast = addToList(buffor1);
-                addToStreamList(index2);
-                k = 0;
+                addToStreamList(searchForCode(buffor2));
+
+                buffor1[0] = buffor1[k-1];
+                buffor1[1] = '\0'; 
+                k = 1;
+
+                free(buffor2);
             }
             else
             {
@@ -141,7 +168,7 @@ void mainCompressingFuction(char ** map)
             }
         }
     }
-
+    addToStreamList(searchForCode(buffor1));
     addToStreamList(5); //endOfInfo
 
     free(buffor1);
@@ -201,7 +228,7 @@ void streamListToByteList(FILE * file)
 
         lzwlistsize++;
         //obliczenie ilosci bitow na pojedynczy kod
-        if(lzwlistsize == (pow(2, bitsPerItem)-1))
+        if(lzwlistsize == (pow(2, bitsPerItem)))
             bitsPerItem++;   
 
         if(number != 5)
@@ -220,7 +247,7 @@ void streamListToByteList(FILE * file)
             dataBlock[0]++;
             
             //zapis koncowego bloku
-            for(l = 0; l < dataBlock[0];l++)
+            for(l = 0; l < dataBlock[0]+1;l++)
                 fputc(dataBlock[l], file);
             break;
         }
@@ -248,8 +275,10 @@ int itemsInStreamList()
 void clearList() //after using clean code
 {
     LZWList_t * act = LZWHead;
+
+    /*
     int timesToClear = 0;
-    while(act->next != NULL)
+    while(act != NULL)
     {
         if(act->index > 5)
             timesToClear++;
@@ -268,6 +297,26 @@ void clearList() //after using clean code
         free(act->next);
         act->next = NULL;        
     }
+
+    */
+
+    do
+    {
+        act = act->next;
+    } while (act->index != 6);
+
+    LZWList_t * act2 = act;
+
+    while(act2 != NULL)
+    {
+        act = act->next;
+        free(act2->code);
+        free(act2);
+        act2 = act;
+    }
+    
+    printf("Tu Jestem!");
+    //
 }
 
 void initLZWList()
@@ -309,6 +358,7 @@ int searchForCode(char * name)
 
     do
     {
+        /*
         int i = 0;
         while(name[i] != '\0')
         {
@@ -317,10 +367,13 @@ int searchForCode(char * name)
             i++;
         }
         if(name[i]=='\0' && name[i-1] && act->code[i-1])
-            return index;
+            return act->index;
+        */
+        if(strcmp(name, act->code)==0)
+            return act->index;
 
         act = act->next;
-    } while (act->next != NULL);
+    } while (act!= NULL);
     
     return 5000; //NOT FOUND
 }
@@ -338,6 +391,10 @@ int addToList(char * name)
     int index = act->index + 1;
     act = act->next;
     act->index = index;
+
+    if(index == 250)
+        printf("fdfd");
+
     act->next = NULL;
     act->code = malloc(sizeof(char) * (strlen(name)+1));
     strcpy(act->code, name);
@@ -408,9 +465,9 @@ void initGIFHeader(int width, int height)
     //Color 2 = green
     head->GCT.color2 = malloc(sizeof(char)*4);
     head->GCT.color2[0] = 0x00;     //Red
-    head->GCT.color2[0] = 0xff;     //Green
-    head->GCT.color2[0] = 0x00;     //Blue
-    head->GCT.color2[0] = '\0';
+    head->GCT.color2[1] = 0xff;     //Green
+    head->GCT.color2[2] = 0x00;     //Blue
+    head->GCT.color2[3] = '\0';
 
 //AplicationExtentionBlock
     head->AEB.extentionName = malloc(sizeof(char)*4);
@@ -432,7 +489,7 @@ void initGIFHeader(int width, int height)
 
     head->GCE.byteSize = 0x04;
     head->GCE.packedField = 0x00;
-    head->GCE.delayTime = 10;
+    head->GCE.delayTime = 5;
     head->GCE.transparentColorIndex = 0x00;
 
 //ImageDescriptor
@@ -541,7 +598,7 @@ void writeGIFHeader(FILE * file)
     free(hexByte);
 
     //Always 1
-    fputc(0x00, file);
+    fputc(0x01, file);
 
     //Number of loops (0 means infinite)
     hex = malloc(sizeof(char)*5);
@@ -664,6 +721,7 @@ void decimalToBin(int number, int digits, char * output)
     for(i = digits-1; i >=0; i--)
     {
         output[i] = workingNumber % 2;
+        workingNumber = workingNumber/2;
     }
 
     output[digits] = '\0';
@@ -683,14 +741,14 @@ void cleanHead()
 void hexToByte(char * hex, char * hexByte, int number)
 {
     int i;
-    int j = number-1;
+    int j = (number-1)*2;
     for(i = 0; i < number; i++)
     {
         hexByte[i] = 16*hex[j] + hex[j+1];
-        j--;
+        j = j-2;
     }
 
-    hexByte[number-1] = '\0';
+    hexByte[number] = '\0';
 }
 
 int binToDecimal(char * bin, int digits)

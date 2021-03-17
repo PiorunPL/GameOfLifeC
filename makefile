@@ -65,10 +65,10 @@ $(OBJ)fileGIF.o: $(SRC)fileGIF.c
 #   DEBUG
 #
 
-$(BIN)dmoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o
-	$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
+$(BIN)dmoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o $(OBJ)dfileGIF.o
+	$(CC) $(BINOPTS) $(DEBUGOPTS) $^ -lm
 
-$(BIN)dtormoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o 
+$(BIN)dtormoore: $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o $(OBJ)dfileGIF.o
 	$(CC) $(BINOPTS) $(DEBUGOPTS) -lm
 
 $(OBJ)dmain.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h
@@ -89,7 +89,7 @@ $(OBJ)dfileOut.o: $(SRC)fileOut.c
 $(OBJ)dtormoore.o: $(SRC)tormoore.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
 
-$(OBJ)dfileGIF.o: $(SRC)fileGIF.c
+$(OBJ)dfileGIF.o: $(SRC)fileGIF.c $(SRC)fileGIF.h
 	$(CC) $(OBJOPTS) $(DEBUGOPTS) -lm
 
 #

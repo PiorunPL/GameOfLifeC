@@ -5,6 +5,7 @@
 
 #include "game.h"
 #include "fileOut.h"
+#include "fileGIF.h"
 
 int **getPrimaryGen(int rows, int cols, FILE *in);
 void saveGen(int **gen, int rows, int cols, char *filename);
@@ -90,10 +91,26 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
+    
 	int **generation = getPrimaryGen(rows, cols, in);
 	fclose(in);
 
+
     checkDIR(dirname);
+    
+    FILE * GIFFile = createGIF(dirname);
+    initGIFHeader(cols, rows);
+    writeGIFHeader(GIFFile);
+    initImageData();
+    initLZWList();
+    mainCompressingFuction(generation);       
+
+    writeGraphicControlExtension(GIFFile);
+    writeImageDescriptor(GIFFile);
+    writeImageData(GIFFile);
+    clearList();
+    clearStreamList();
+    
     char * path = createBMP(0,iterations, dirname);
     editBMP(generation, rows, cols, path);
 
@@ -102,9 +119,18 @@ int main(int argc, char **argv) {
         play(generation, rows, cols);
         path = createBMP(i+1, iterations, dirname);
         editBMP(generation, rows, cols, path);
+
+        mainCompressingFuction(generation);       
+
+        writeGraphicControlExtension(GIFFile);
+        writeImageDescriptor(GIFFile);
+        writeImageData(GIFFile);
+        clearList();
+        clearStreamList();
     }
 	saveGen(generation, rows, cols, output);
-
+    writeEndOfFile(GIFFile);
+    //cleanHead();
 
 	cleanTab(generation, rows);
 

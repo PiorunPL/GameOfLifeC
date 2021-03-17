@@ -2,7 +2,7 @@
 
 void initStreamList();
 void addToStreamList(int number);
-void mainCompressingFuction(char ** map);
+void mainCompressingFuction(int ** map);
 void streamListToByteList(FILE * file);
 int itemsInStreamList();
 void clearList();
@@ -21,3 +21,4 @@ void decimalToBin(int number, int digits, char * output);
 void cleanHead();
 void hexToByte(char * hex, char * hexByte, int number);
 int binToDecimal(char * bin, int digits);
+void clearStreamList();
