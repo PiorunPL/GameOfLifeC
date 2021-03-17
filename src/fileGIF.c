@@ -303,9 +303,11 @@ void clearList() //after using clean code
     do
     {
         act = act->next;
-    } while (act->index != 6);
+    } while (act->index != 5);
 
-    LZWList_t * act2 = act;
+    LZWList_t * act2 = act->next;
+    act->next = NULL;
+    act = act2;
 
     while(act2 != NULL)
     {
@@ -315,7 +317,7 @@ void clearList() //after using clean code
         act2 = act;
     }
     
-    printf("Tu Jestem!");
+    //printf("Tu Jestem!");
     //
 }
 
