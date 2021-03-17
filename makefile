@@ -30,11 +30,11 @@ endif
 #   BIN FILES
 #
 
-$(BIN)moore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o 
-	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o -lm
+$(BIN)moore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o $(OBJ)fileGIF.o
+	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o $(OBJ)fileGIF.o -lm
 
-$(BIN)tormoore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o 
-	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o -lm
+$(BIN)tormoore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o $(OBJ)fileGIF.o
+	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o $(OBJ)fileGIF.o -lm
 
 #
 #   OBJECT FILES
@@ -57,6 +57,9 @@ $(OBJ)fileOut.o: $(SRC)fileOut.c
 
 $(OBJ)tormoore.o: $(SRC)tormoore.c
 	$(CC) $(OBJOPTS)
+
+$(OBJ)fileGIF.o: $(SRC)fileGIF.c
+	$(CC) $(OBJOPTS) -lm
 
 #
 #   DEBUG
@@ -85,6 +88,9 @@ $(OBJ)dfileOut.o: $(SRC)fileOut.c
 
 $(OBJ)dtormoore.o: $(SRC)tormoore.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
+
+$(OBJ)dfileGIF.o: $(SRC)fileGIF.c
+	$(CC) $(OBJOPTS) $(DEBUGOPTS) -lm
 
 #
 #   CLEAN
