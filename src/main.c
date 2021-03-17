@@ -3,6 +3,7 @@
 #include <string.h>
 #include <getopt.h>
 
+#include "readbmp.h"
 #include "game.h"
 #include "fileOut.h"
 
@@ -63,6 +64,9 @@ int main(int argc, char **argv) {
         }
     }
 
+    FILE *in;
+    int **generation;
+
     if (randdimensions != NULL) {
         if (sscanf(randdimensions, "%dx%d", &rows, &cols) != 2) {
             fprintf(stderr, "Wrong syntax, after '-r' parameter should be\n"
@@ -72,24 +76,33 @@ int main(int argc, char **argv) {
         }
     }
 
-    int **generation;
-
-    if ((rows > 0 && cols > 0) && strcmp(map, "noname") == 0) {
+//  BMP header is correct -> read generation from .bmp file
+    if ((in = isbmp(map)) != NULL) {
+        generation = readbmp(in);   
+    }
+ 
+//  dimensions are correct (greater than 0) and
+//  map-file name was not inserted -> generate random map
+    else if ((rows > 0 && cols > 0) && strcmp(map, "noname") == 0) {
         generation = randmap(rows, cols);
     }
+
+//  neither dimensions nor name of map-file were inserted -> print
+//  manual on the screen and exit
     else if ((rows == -1 && cols == -1) && strcmp(map, "noname") == 0) {
         fprintf(stderr, "Wrong syntax: map-file or random map dimensions are required.\n\n");
         fprintf(stderr, help, progname, progname);
         return EXIT_FAILURE;
     }
+
+//  map-file name was not inserted and dimensions are not correct -> print
+//  manual on the screen and exit
     else if ((rows <= 0 && cols <= 0) && strcmp(map, "noname") == 0) {
         fprintf(stderr, "Wrong dimensions: %dx%d\n\n", rows, cols);
         fprintf(stderr, help, progname, progname);
         return EXIT_FAILURE;
     }
     else if ((rows == -1 && cols == -1) && strcmp(map, "noname") != 0) {
-        FILE *in;
-
         if ((in = fopen(map, "r")) == NULL) {
             fprintf(stderr, "Input file %s doesn't exist!\n\n", map);
             fprintf(stderr, help, progname, progname);

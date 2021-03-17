@@ -30,11 +30,11 @@ endif
 #   BIN FILES
 #
 
-$(BIN)moore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o $(OBJ)randmap.o
-	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o -lm $(OBJ)randmap.o
+$(BIN)moore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o $(OBJ)randmap.o $(OBJ)readbmp.o
+	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o -lm $(OBJ)randmap.o $(OBJ)readbmp.o
 
-$(BIN)tormoore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o $(OBJ)randmap.o
-	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o -lm $(OBJ)randmap.o
+$(BIN)tormoore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o $(OBJ)randmap.o $(OBJ)readbmp.o
+	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o -lm $(OBJ)randmap.o $(OBJ)readbmp.o
 
 #
 #   OBJECT FILES
@@ -61,17 +61,20 @@ $(OBJ)tormoore.o: $(SRC)tormoore.c
 $(OBJ)randmap.o: $(SRC)randmap.c
 	$(CC) $(OBJOPTS)
 
+$(OBJ)readbmp.o: $(SRC)readbmp.c $(SRC)readbmp.h 
+	$(CC) $(OBJOPTS) -lm
+
 #
 #   DEBUG
 #
 
 debug: $(BIN)dmoore $(BIN)dtormoore
 
-$(BIN)dmoore: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o $(OBJ)drandmap.o
-	$(CC) $(BINOPTS) $(DEBUGOPTS) $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o -lm $(OBJ)drandmap.o
+$(BIN)dmoore: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o $(OBJ)drandmap.o $(OBJ)dreadbmp.o
+	$(CC) $(BINOPTS) $(DEBUGOPTS) $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o -lm $(OBJ)drandmap.o $(OBJ)dreadbmp.o
 
-$(BIN)dtormoore: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o $(OBJ)drandmap.o
-	$(CC) $(BINOPTS) $(DEBUGOPTS) $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o -lm $(OBJ)drandmap.o
+$(BIN)dtormoore: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o $(OBJ)drandmap.o $(OBJ)dreadbmp.o
+	$(CC) $(BINOPTS) $(DEBUGOPTS) $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o -lm $(OBJ)drandmap.o $(OBJ)dreadbmp.o
 
 $(OBJ)dmain.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
@@ -93,6 +96,9 @@ $(OBJ)dtormoore.o: $(SRC)tormoore.c
 
 $(OBJ)drandmap.o: $(SRC)randmap.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
+
+$(OBJ)dreadbmp.o: $(SRC)readbmp.c $(SRC)readbmp.c 
+	$(CC) $(OBJOPTS) $(DEBUGOPTS) -lm
 
 #
 #   CLEAN
