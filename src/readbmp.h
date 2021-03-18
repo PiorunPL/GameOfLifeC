@@ -25,10 +25,9 @@ struct DIB_header {
 };
 
 struct RGB {
-    unsigned char red;
-    unsigned char green;
     unsigned char blue;
-    unsigned char reserved;
+    unsigned char green;
+    unsigned char red;
 };
 
 struct color_table {
@@ -44,6 +43,6 @@ int readDIB(FILE *file, struct DIB_header *header);
 
 int readCT(FILE *file, struct color_table *CT);
 
-int readbmp(FILE *file);
+int **readbmp(FILE *file, int *rows, int *cols);
 
 #endif

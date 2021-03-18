@@ -40,6 +40,7 @@ int main(int argc, char **argv) {
     int i;
 	int rows = -1, cols = -1;
 
+//  collects command line options and arguments
     while ((opt = getopt(argc, argv, "m:i:d:o:r:")) != -1) {
         switch (opt) {
         case 'm':
@@ -64,9 +65,8 @@ int main(int argc, char **argv) {
         }
     }
 
-    FILE *in;
-    int **generation;
-
+//  checks if dimensions for randomly generated map are
+//  provided and if yes, checks if are they correct
     if (randdimensions != NULL) {
         if (sscanf(randdimensions, "%dx%d", &rows, &cols) != 2) {
             fprintf(stderr, "Wrong syntax, after '-r' parameter should be\n"
@@ -76,9 +76,12 @@ int main(int argc, char **argv) {
         }
     }
 
+    FILE *in;
+    int **generation;
+
 //  BMP header is correct -> read generation from .bmp file
     if ((in = isbmp(map)) != NULL) {
-        generation = readbmp(in);   
+        generation = readbmp(in, &rows, &cols);
     }
  
 //  dimensions are correct (greater than 0) and
@@ -102,6 +105,10 @@ int main(int argc, char **argv) {
         fprintf(stderr, help, progname, progname);
         return EXIT_FAILURE;
     }
+
+//  dimensions were not inserted, but map-file name was -> open
+//  this file and check if it is formated correctly, if it is
+//  read map from this file
     else if ((rows == -1 && cols == -1) && strcmp(map, "noname") != 0) {
         if ((in = fopen(map, "r")) == NULL) {
             fprintf(stderr, "Input file %s doesn't exist!\n\n", map);
@@ -110,7 +117,7 @@ int main(int argc, char **argv) {
         }
 
         if (fscanf(in, "%d %d", &rows, &cols) != 2) {
-            fprintf(stderr, "Invalid format of file (in the first line)\n\n");
+            fprintf(stderr, "Invalid format of file (in the first line).\n\n");
             fprintf(stderr, help, progname, progname);
             fclose(in);
             return EXIT_FAILURE;
@@ -119,12 +126,16 @@ int main(int argc, char **argv) {
         generation = getPrimaryGen(rows, cols, in);
         fclose(in);
     }
+
+//  idk, just in case
     else {
         fprintf(stderr, "Wrong syntax: map-file or random map dimensions are required.\n\n");
         fprintf(stderr, help, progname, progname);
         return EXIT_FAILURE;
     }
 
+//  no matter how generation was filled, here graphical files are created
+//  if nothing goes wrong inside functions, program finishes with success
     checkDIR(dirname);
     char *path = createBMP(0,iterations, dirname);
     editBMP(generation, rows, cols, path);

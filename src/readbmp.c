@@ -47,6 +47,7 @@ int readBMPh (FILE *file, struct BMP_header *header) {
     return 0;
 }
 
+    void prarr(int **array, int rows, int cols);
 int readDIB(FILE *file, struct DIB_header *header) {
     fread(&header->size, 4, 1, file);
 
@@ -86,7 +87,7 @@ int readDIB(FILE *file, struct DIB_header *header) {
 
     return 0;
 }
-
+/*
 int readCT(FILE *file, struct color_table *CT) {
     struct color_table *tab;
 
@@ -94,10 +95,9 @@ int readCT(FILE *file, struct color_table *CT) {
 
     int i;
     for (i = 0; i < CT->usedcolors; i++) {
-        fread(&CT->colors[i].red, 1, 1, file);
-        fread(&CT->colors[i].green, 1, 1, file);
         fread(&CT->colors[i].blue, 1, 1, file);
-        fread(&CT->colors[i].reserved, 1, 1, file);
+        fread(&CT->colors[i].green, 1, 1, file);
+        fread(&CT->colors[i].red, 1, 1, file);
 
         printf("red: %d\n", CT->colors[i].red);
         printf("green: %d\n", CT->colors[i].red);
@@ -107,8 +107,8 @@ int readCT(FILE *file, struct color_table *CT) {
 
     return 0;
 }
-
-int readbmp(FILE *file) {
+*/
+int **readbmp(FILE *file, int *rows, int *cols) {
     struct BMP_header BMP;
     struct DIB_header DIB;
     struct color_table CT;
@@ -120,24 +120,49 @@ int readbmp(FILE *file) {
     
     CT.colors = malloc(CT.usedcolors * sizeof(struct color_table));
 
-    readCT(file, &CT); 
+    //readCT(file, &CT); 
 
-    unsigned int rowsize = 4 * (DIB.bitcount * DIB.width + 31) / 32;
-    unsigned int height = DIB.imagesize / rowsize;
-    int cols = DIB.width / 8;
+    *rows = DIB.height;
+    *cols = DIB.width;
 
-    int **generation = malloc(height * sizeof(int *));
+    unsigned int rowsize = ((*cols + 31) / 32) * 4;
 
-    int i, j;
+    printf("rowsize: %d\n\n", rowsize);
+
+    int **generation = malloc(*rows * sizeof(int *));
+
+    int i, j, bit;
     unsigned char tmp;
-    for (i = height - 1; i >= 0; i--) {
-        generation[i] = malloc(cols * sizeof(int));
-        for (j = 0; j < cols; j++) {
+    unsigned char byte[8] = {1, 2, 4, 8, 16, 32, 64, 128};
+    unsigned int tmpoffset = BMP.offset;
+
+    for (i = *rows - 1; i >= 0; i--) {
+        fseek(file, tmpoffset, SEEK_SET);
+        generation[i] = malloc(*cols * sizeof(int));
+
+        for (j = 0; j < *cols; j++) {
             fread(&tmp, 1, 1, file);
-            generation[i][j] = (int)tmp;
+
+            for (bit = 7; bit >= 0; bit--, j++) {
+                if (byte[bit] & tmp == pow(2, bit)) generation[i][j] = 1;
+                else generation[i][j] = 0;
+            }
         }
+        tmpoffset += rowsize;
     }
 
+    prarr(generation, *rows, *cols);
 
     return generation;
+}
+
+void prarr(int **array, int rows, int cols) {
+    int r, c;
+
+    for (r = 0; r < rows; r++) {
+        for (c = 0; c < cols; c++)
+            printf("%d ", array[r][c]);
+        printf("\n");
+    }
+    printf("\n");
 }
