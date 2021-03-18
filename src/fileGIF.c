@@ -179,8 +179,10 @@ void streamListToByteList(FILE * file)
     int lzwlistsize = 4;
     int bitsPerItem = 3;
 
-    char * dataBlock = malloc(sizeof(char)*256);
+    unsigned char * dataBlock = malloc(sizeof(char)*256);
     dataBlock[0] = 0x00;
+
+    
 
     streamList_t * act = streamHead; 
     int number = act->number;
@@ -245,7 +247,7 @@ void streamListToByteList(FILE * file)
             int result = binToDecimal(buffor, 8);
             dataBlock[j] = result;
             dataBlock[0]++;
-            
+
             //zapis koncowego bloku
             for(l = 0; l < dataBlock[0]+1;l++)
                 fputc(dataBlock[l], file);
@@ -491,7 +493,7 @@ void initGIFHeader(int width, int height)
 
     head->GCE.byteSize = 0x04;
     head->GCE.packedField = 0x00;
-    head->GCE.delayTime = 5;
+    head->GCE.delayTime = 2;
     head->GCE.transparentColorIndex = 0x00;
 
 //ImageDescriptor
@@ -731,6 +733,7 @@ void decimalToBin(int number, int digits, char * output)
 
 void cleanHead()
 {
+    free(head->LSD.packedField);
     free(head->GCT.color1);
     free(head->GCT.color2);
     free(head->AEB.extentionName);
