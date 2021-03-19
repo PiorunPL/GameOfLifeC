@@ -27,7 +27,6 @@ FILE *isbmp(char *filename) {
 }
 
 int readBMPh (FILE *file, struct BMP_header *header) {
-
     fread(header->name, sizeof(char), 2, file);
 
     if (header->name[0] != 'B' || header->name[1] != 'M') {
@@ -87,6 +86,7 @@ int readDIB(FILE *file, struct DIB_header *header) {
 
     return 0;
 }
+
 /*
 int readCT(FILE *file, struct color_table *CT) {
     struct color_table *tab;
@@ -108,6 +108,7 @@ int readCT(FILE *file, struct color_table *CT) {
     return 0;
 }
 */
+
 int **readbmp(FILE *file, int *rows, int *cols) {
     struct BMP_header BMP;
     struct DIB_header DIB;
