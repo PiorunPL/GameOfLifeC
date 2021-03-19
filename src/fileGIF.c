@@ -396,9 +396,6 @@ int addToList(char * name)
     act = act->next;
     act->index = index;
 
-    if(index == 250)
-        printf("fdfd");
-
     act->next = NULL;
     act->code = malloc(sizeof(char) * (strlen(name)+1));
     strcpy(act->code, name);
