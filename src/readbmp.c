@@ -130,27 +130,29 @@ int **readbmp(FILE *file, int *rows, int *cols) {
 
     printf("rowsize: %d\n\n", rowsize);
 
-    int **generation = malloc(*rows * sizeof(int *));
+    int **generation = (int **)malloc(*rows * sizeof(int *));
 
-    int i, j, bit;
+    int i, j, k, bit;
     unsigned char tmp;
     unsigned char byte[8] = {1, 2, 4, 8, 16, 32, 64, 128};
     unsigned int tmpoffset = BMP.offset;
 
     for (i = *rows - 1; i >= 0; i--) {
         fseek(file, tmpoffset, SEEK_SET);
-        generation[i] = malloc(*cols * sizeof(int));
+        generation[i] = (int *)malloc(*cols * sizeof(int));
 
         for (j = 0; j < *cols; j++) {
             fread(&tmp, 1, 1, file);
 
-            for (bit = 7; bit >= 0; bit--, j++) {
-                if (byte[bit] & tmp == pow(2, bit)) generation[i][j] = 1;
-                else generation[i][j] = 0;
+            for (bit = 7, k = 0; bit >= 0 && j < *cols; bit--, k++) {
+                if ((byte[bit] & tmp) == pow(2, bit)) generation[i][j + k] = 0;
+                else generation[i][j + k ] = 1;
             }
         }
         tmpoffset += rowsize;
     }
+
+    fclose(file);
 
     prarr(generation, *rows, *cols);
 
