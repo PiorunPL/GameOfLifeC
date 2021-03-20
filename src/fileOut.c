@@ -88,7 +88,7 @@ void editBMP(int **map, int row, int col, char * path)
     int BMPSize = 62 + 8 * row * RowSize;
 
     char *hex = malloc(sizeof(char) * 8);
-    decimalToHex(BMPSize, hex);
+    decimalToHex(BMPSize, hex, 8);
 
     char hexByte[4];
     hexByte[0] = 16 * hex[6] + hex[7];
@@ -119,7 +119,7 @@ void editBMP(int **map, int row, int col, char * path)
 
     //Width of bitmap in pixel
     int widthInPix = col * 8;
-    decimalToHex(widthInPix, hex);
+    decimalToHex(widthInPix, hex, 8);
 
     hexByte[0] = 16 * hex[6] + hex[7];
     hexByte[1] = 16 * hex[4] + hex[5];
@@ -131,7 +131,7 @@ void editBMP(int **map, int row, int col, char * path)
 
     //Height of bitmap in pixel
     int heightInPix = row * 8;
-    decimalToHex(heightInPix, hex);
+    decimalToHex(heightInPix, hex, 8);
 
     hexByte[0] = 16 * hex[6] + hex[7];
     hexByte[1] = 16 * hex[4] + hex[5];
@@ -155,7 +155,7 @@ void editBMP(int **map, int row, int col, char * path)
 
     //size of the raw bitmap
     int sizeRawBMP = 8 * row * RowSize;
-    decimalToHex(sizeRawBMP, hex);
+    decimalToHex(sizeRawBMP, hex, 8);
 
     hexByte[0] = 16 * hex[6] + hex[7];
     hexByte[1] = 16 * hex[4] + hex[5];
@@ -222,10 +222,10 @@ void editBMP(int **map, int row, int col, char * path)
 }
 
 //changing decimal number into hex number
-void decimalToHex(int number, char *result)
+void decimalToHex(int number, char *result, int digits)
 {
     int remainder;
-    int i = 7;
+    int i = digits-1;
 
     while (number != 0)
     {

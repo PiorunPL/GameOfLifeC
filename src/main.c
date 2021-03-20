@@ -5,6 +5,7 @@
 
 #include "game.h"
 #include "fileOut.h"
+#include "fileGIF.h"
 
 int **getPrimaryGen(int rows, int cols, FILE *in);
 void saveGen(int **gen, int rows, int cols, char *filename);
@@ -111,18 +112,73 @@ int main(int argc, char **argv) {
         fprintf(stderr, help, progname, progname);
         return EXIT_FAILURE;
     }
+	
+
+
+	FILE *in;
+	//Sprawdzanie czy plik istnieje
+	if( (in = fopen(map, "r")) != NULL){
+		//File exists
+	}else{
+		fprintf(stderr, "Input file %s doesn`t exist!\n", map);
+		return EXIT_FAILURE;
+	}
+
+
+	//rows i cols są usatwione na -1, aby w razie błędu został wyłapany
+	int rows = -1;
+	int cols = -1;
+	if( fscanf(in, "%d %d", &rows, &cols) != 2 ){
+		fprintf(stderr, "Invalid format of file (in the first line)\n");
+		fclose(in);
+		return EXIT_FAILURE;
+	}	
+	
+	if( rows == -1 || cols == -1 ){
+		fclose(in);
+		fprintf(stderr, "Invalid format of file %s\n", map);
+		return EXIT_FAILURE;
+	}
+
+    
+	int **generation = getPrimaryGen(rows, cols, in);
+	fclose(in);
+
 
     checkDIR(dirname);
-    char *path = createBMP(0,iterations, dirname);
+    
+    FILE * GIFFile = createGIF(dirname);
+    initGIFHeader(cols, rows);
+    writeGIFHeader(GIFFile);
+    initImageData();
+    initLZWList();
+    mainCompressingFuction(generation);       
+
+    writeGraphicControlExtension(GIFFile);
+    writeImageDescriptor(GIFFile);
+    writeImageData(GIFFile);
+    clearList();
+    clearStreamList();
+    
+    char * path = createBMP(0,iterations, dirname);
     editBMP(generation, rows, cols, path);
 
     for (i = 0; i < iterations; i++) {
         play(generation, rows, cols);
         path = createBMP(i+1, iterations, dirname);
         editBMP(generation, rows, cols, path);
-    }
 
+        mainCompressingFuction(generation);       
+
+        writeGraphicControlExtension(GIFFile);
+        writeImageDescriptor(GIFFile);
+        writeImageData(GIFFile);
+        clearList();
+        clearStreamList();
+    }
 	saveGen(generation, rows, cols, output);
+    writeEndOfFile(GIFFile);
+    //cleanHead();
 
 	cleanTab(generation, rows);
 
