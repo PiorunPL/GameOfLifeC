@@ -45,4 +45,6 @@ int readCT(FILE *file, struct color_table *CT);
 
 int **readbmp(FILE *file, int *rows, int *cols);
 
+int **onebpp(FILE *file, struct BMP_header BMP, struct DIB_header DIB);
+
 #endif

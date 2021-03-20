@@ -82,6 +82,7 @@ int main(int argc, char **argv) {
 //  BMP header is correct -> read generation from .bmp file
     if ((in = isbmp(map)) != NULL) {
         generation = readbmp(in, &rows, &cols);
+        fclose(in);
     }
  
 //  dimensions are correct (greater than 0) and
@@ -136,19 +137,25 @@ int main(int argc, char **argv) {
 
 //  no matter how generation was filled, here graphical files are created
 //  if nothing goes wrong inside functions, program finishes with success
-    checkDIR(dirname);
-    char *path = createBMP(0,iterations, dirname);
-    editBMP(generation, rows, cols, path);
-
-    for (i = 0; i < iterations; i++) {
-        play(generation, rows, cols);
-        path = createBMP(i+1, iterations, dirname);
+    if (generation != NULL) {
+        checkDIR(dirname);
+        char *path = createBMP(0,iterations, dirname);
         editBMP(generation, rows, cols, path);
+
+        for (i = 0; i < iterations; i++) {
+            play(generation, rows, cols);
+            path = createBMP(i+1, iterations, dirname);
+            editBMP(generation, rows, cols, path);
+        }
+
+        saveGen(generation, rows, cols, output);
+
+        cleanTab(generation, rows);
+    
+        return EXIT_SUCCESS;
     }
-
-	saveGen(generation, rows, cols, output);
-
-	cleanTab(generation, rows);
-
-    return EXIT_SUCCESS;
+    else {
+        //costam dopisać
+        return EXIT_FAILURE;
+    }
 }

@@ -4,11 +4,15 @@
 
 #include "readbmp.h"
 
+/*
+ *  This function checks if filename includes '.bmp', which is a clue
+ *  it could be BMP file. It returns file pointer in case of success.
+ */
 FILE *isbmp(char *filename) {
     FILE *file = NULL;
     int i = 0, j;
 
-    while (&filename[i] != NULL) {
+    while (filename[i] != '\0') {
         if (filename[i++] == '.') {
             if (filename[i++] == 'b') {
                 if (filename[i++] == 'm') {
@@ -26,34 +30,30 @@ FILE *isbmp(char *filename) {
     return file;
 }
 
+/*
+ *  This fuction reads BMP header and writes data into BMP_header structure.
+ *  Returns 1 if failed and 0 if succeed.
+ */
 int readBMPh (FILE *file, struct BMP_header *header) {
-    fread(header->name, sizeof(char), 2, file);
+    fread(header->name, 1, 2, file);
 
-    if (header->name[0] != 'B' || header->name[1] != 'M') {
-        fclose(file);
-        return 1;
-    }
+    if (header->name[0] != 'B' || header->name[1] != 'M') return 1;
 
-    fread(&header->filesize, sizeof(int), 1, file);
-    fread(&header->garbage, sizeof(int), 1, file);
-    fread(&header->offset, sizeof(int), 1, file);
-
-    printf("name: %c%c\n", header->name[0], header->name[1]);
-    printf("filesize: %d\n", header->filesize);
-    printf("garbage: %d\n", header->garbage);
-    printf("offset: %d\n\n", header->offset);
+    fread(&header->filesize, 4, 1, file);
+    fread(&header->garbage, 4, 1, file);
+    fread(&header->offset, 4, 1, file);
 
     return 0;
 }
 
-    void prarr(int **array, int rows, int cols);
+/*
+ *  This function reads DIB header and writes data into DIB_header structure.
+ *  Returns 1 if failed and 0 if succeed.
+ */
 int readDIB(FILE *file, struct DIB_header *header) {
     fread(&header->size, 4, 1, file);
 
-    if (header->size != 40) {
-        fclose(file);
-        return 1;
-    }
+    if (header->size != 40) return 1;
 
     fread(&header->width, 4, 1, file);
     fread(&header->height, 4, 1, file);
@@ -61,10 +61,7 @@ int readDIB(FILE *file, struct DIB_header *header) {
     fread(&header->bitcount, 2, 1, file);
     fread(&header->compression, 4, 1, file);
 
-    if (header->compression != 0) {
-        fclose(file);
-        return 1;
-    }
+    if (header->compression != 0) return 1;
 
     fread(&header->imagesize, 4, 1, file);
     fread(&header->xppm, 4, 1, file);
@@ -72,100 +69,67 @@ int readDIB(FILE *file, struct DIB_header *header) {
     fread(&header->usedcolors, 4, 1, file);
     fread(&header->importantcolors, 4, 1, file);
 
-    printf("size: %d\n", header->size);
-    printf("width: %d\n", header->width);
-    printf("height: %d\n", header->height);
-    printf("planes: %d\n", header->planes);
-    printf("bitcount: %d\n", header->bitcount);
-    printf("compression: %d\n", header->compression);
-    printf("image size: %d\n", header->imagesize);
-    printf("x: %d\n", header->xppm);
-    printf("y: %d\n", header->yppm);
-    printf("used: %d\n", header->usedcolors);
-    printf("important: %d\n\n", header->importantcolors);
-
     return 0;
 }
 
 /*
-int readCT(FILE *file, struct color_table *CT) {
-    struct color_table *tab;
+ *  This function reads array of pixels into array of ints.
+ *  It reads array of pixels of BMP file with 1 bpp color depth.
+ *  Returns NULL if failed and pointer to the array if succeed.
+ */
+int **onebpp(FILE *file, struct BMP_header BMP, struct DIB_header DIB) {
+    unsigned int rowsize = ((DIB.width + 31) / 32) * 4;
 
-    printf("num: %d\n", CT->usedcolors);
-
-    int i;
-    for (i = 0; i < CT->usedcolors; i++) {
-        fread(&CT->colors[i].blue, 1, 1, file);
-        fread(&CT->colors[i].green, 1, 1, file);
-        fread(&CT->colors[i].red, 1, 1, file);
-
-        printf("red: %d\n", CT->colors[i].red);
-        printf("green: %d\n", CT->colors[i].red);
-        printf("blue: %d\n", CT->colors[i].red);
-        printf("reserved: %d\n\n", CT->colors[i].red);
-    }
-
-    return 0;
-}
-*/
-
-int **readbmp(FILE *file, int *rows, int *cols) {
-    struct BMP_header BMP;
-    struct DIB_header DIB;
-    struct color_table CT;
-
-    readBMPh(file, &BMP);
-    readDIB(file, &DIB);
-
-    CT.usedcolors = pow(2, DIB.bitcount);
-    
-    CT.colors = malloc(CT.usedcolors * sizeof(struct color_table));
-
-    //readCT(file, &CT); 
-
-    *rows = DIB.height;
-    *cols = DIB.width;
-
-    unsigned int rowsize = ((*cols + 31) / 32) * 4;
-
-    printf("rowsize: %d\n\n", rowsize);
-
-    int **generation = (int **)malloc(*rows * sizeof(int *));
+    int **generation;
+    if ((generation = (int **)malloc(DIB.height * sizeof(int *))) == NULL) return NULL;
 
     int i, j, k, bit;
     unsigned char tmp;
     unsigned char byte[8] = {1, 2, 4, 8, 16, 32, 64, 128};
     unsigned int tmpoffset = BMP.offset;
 
-    for (i = *rows - 1; i >= 0; i--) {
-        fseek(file, tmpoffset, SEEK_SET);
-        generation[i] = (int *)malloc(*cols * sizeof(int));
+    for (i = DIB.height - 1; i >= 0; i--) {
+        if (fseek(file, tmpoffset, SEEK_SET) == -1) return NULL;
+        if ((generation[i] = (int *)malloc(DIB.width * sizeof(int))) == NULL) return NULL;
 
-        for (j = 0; j < *cols; j++) {
-            fread(&tmp, 1, 1, file);
+        for (j = 0; j < DIB.width; j++) {
+            if (fread(&tmp, 1, 1, file) != 1) return NULL;
 
-            for (bit = 7, k = 0; bit >= 0 && j < *cols; bit--, k++) {
-                if ((byte[bit] & tmp) == pow(2, bit)) generation[i][j + k] = 0;
-                else generation[i][j + k ] = 1;
+            for (bit = 7, k = 0; bit >= 0 && j < DIB.width; bit--, j++) {
+                if ((byte[bit] & tmp) == pow(2, bit)) generation[i][j] = 0;
+                else generation[i][j] = 1;
             }
+            j--;
         }
         tmpoffset += rowsize;
     }
 
-    fclose(file);
-
-    prarr(generation, *rows, *cols);
-
     return generation;
 }
 
-void prarr(int **array, int rows, int cols) {
-    int r, c;
+/*
+ *  This function is responsible for management of BMP file reading.
+ *  It controls other functions aimed for reading parts of BMP file.
+ *  Returns NULL if failed and pointer to the array of ints with pixel
+ *  map in it if succeed. In case of success it also changes values of 
+ *  rows and columns passed to the function.
+ */
+int **readbmp(FILE *file, int *rows, int *cols) {
+    struct BMP_header BMP;
+    struct DIB_header DIB;
+    struct color_table CT;
 
-    for (r = 0; r < rows; r++) {
-        for (c = 0; c < cols; c++)
-            printf("%d ", array[r][c]);
-        printf("\n");
+    if (readBMPh(file, &BMP) == 1) return NULL;
+    if (readDIB(file, &DIB) == 1) return NULL;
+
+    if (DIB.bitcount == 1) {
+        *rows = DIB.height;
+        *cols = DIB.width;
+        return onebpp(file, BMP, DIB);
     }
-    printf("\n");
+    else {
+        fprintf(stderr, "This file has %d bits per pixel color depth. "
+                "I cannot process this kind of file yet.\n\n", DIB.bitcount);
+        return NULL;
+    }
 }
