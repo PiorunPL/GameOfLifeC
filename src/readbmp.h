@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 struct BMP_header {
-    char name[2];
+    unsigned char name[2];
     unsigned int filesize;
     int garbage;
     unsigned int offset;

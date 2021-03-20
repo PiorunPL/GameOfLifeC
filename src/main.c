@@ -13,6 +13,7 @@ void cleanTab(int **tab, int rows);
 int **randmap(int rows, int cols);   
 
 char *help = 
+"----------------------------------------------------------------\n"
 "NAME\n"
 "   %s - simulation of Conway's Game of Life\n\n"
 "SYNOPSIS\n"
@@ -27,7 +28,8 @@ char *help =
 "AUTHORS\n"
 "   Jakub Maciejewski, Michal Ziober, Sebastian Gorka, students of\n"
 "   Warsaw University of Technology.\n"
-"   This program is JIMP2 coursework.\n";
+"   This program is JIMP2 coursework.\n"
+"----------------------------------------------------------------\n";
 
 int main(int argc, char **argv) {
     char *progname = argv[0];
@@ -65,8 +67,11 @@ int main(int argc, char **argv) {
         }
     }
 
+    FILE *in;
+    int **generation;
+
 //  checks if dimensions for randomly generated map are
-//  provided and if yes, checks if are they correct
+//  provided and if yes, checks if they are correct
     if (randdimensions != NULL) {
         if (sscanf(randdimensions, "%dx%d", &rows, &cols) != 2) {
             fprintf(stderr, "Wrong syntax, after '-r' parameter should be\n"
@@ -76,19 +81,25 @@ int main(int argc, char **argv) {
         }
     }
 
-    FILE *in;
-    int **generation;
-
 //  BMP header is correct -> read generation from .bmp file
     if ((in = isbmp(map)) != NULL) {
-        generation = readbmp(in, &rows, &cols);
+        if ((generation = readbmp(in, &rows, &cols)) == NULL) {
+            fclose(in);
+            fprintf(stderr, "File %s cannot be read correctly.\n\n", map);
+            fprintf(stderr, help, progname, progname);
+            return EXIT_FAILURE;
+        }
         fclose(in);
     }
  
 //  dimensions are correct (greater than 0) and
 //  map-file name was not inserted -> generate random map
     else if ((rows > 0 && cols > 0) && strcmp(map, "noname") == 0) {
-        generation = randmap(rows, cols);
+        if ((generation = randmap(rows, cols)) == NULL) {
+            fprintf(stderr, "Random map cannot be created.\n\n");
+            fprintf(stderr, help, progname, progname);
+            return EXIT_FAILURE;
+        }
     }
 
 //  neither dimensions nor name of map-file were inserted -> print
@@ -101,7 +112,7 @@ int main(int argc, char **argv) {
 
 //  map-file name was not inserted and dimensions are not correct -> print
 //  manual on the screen and exit
-    else if ((rows <= 0 && cols <= 0) && strcmp(map, "noname") == 0) {
+    else if ((rows <= 0 || cols <= 0) && strcmp(map, "noname") == 0) {
         fprintf(stderr, "Wrong dimensions: %dx%d\n\n", rows, cols);
         fprintf(stderr, help, progname, progname);
         return EXIT_FAILURE;
@@ -112,7 +123,7 @@ int main(int argc, char **argv) {
 //  read map from this file
     else if ((rows == -1 && cols == -1) && strcmp(map, "noname") != 0) {
         if ((in = fopen(map, "r")) == NULL) {
-            fprintf(stderr, "Input file %s doesn't exist!\n\n", map);
+            fprintf(stderr, "Input file '%s' does not exist.\n\n", map);
             fprintf(stderr, help, progname, progname);
             return EXIT_FAILURE;
         }
@@ -135,7 +146,8 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-//  no matter how generation was filled, here graphical files are created
+//  no matter how generation was filled, if it is filled correctly, then
+//  graphical files are created here
 //  if nothing goes wrong inside functions, program finishes with success
     if (generation != NULL) {
         checkDIR(dirname);
@@ -155,7 +167,7 @@ int main(int argc, char **argv) {
         return EXIT_SUCCESS;
     }
     else {
-        //costam dopisać
+        fprintf(stderr, help, progname, progname);
         return EXIT_FAILURE;
     }
 }

@@ -32,42 +32,55 @@ FILE *isbmp(char *filename) {
 
 /*
  *  This fuction reads BMP header and writes data into BMP_header structure.
- *  Returns 1 if failed and 0 if succeed.
+ *  Returns 1 (error) or 2 (wrong values in header) if failed and 0 if succeed.
  */
 int readBMPh (FILE *file, struct BMP_header *header) {
-    fread(header->name, 1, 2, file);
+    if (fread(header->name, 1, 2, file) != 2) return 1;
 
-    if (header->name[0] != 'B' || header->name[1] != 'M') return 1;
+    if (header->name[0] == 'B' || header->name[1] != 'M') {
+        fprintf(stderr, "Wrong values in header field: 0x%X and 0x%X.\n"
+                        "Instead of 0x42 and 0x4D.\n\n", header->name[0], header->name[1]);
+        return 2;
+    }
 
-    fread(&header->filesize, 4, 1, file);
-    fread(&header->garbage, 4, 1, file);
-    fread(&header->offset, 4, 1, file);
+    if (fread(&header->filesize, 4, 1, file) != 1) return 1;
+    if (fread(&header->garbage, 4, 1, file) != 1) return 1;
+    if (fread(&header->offset, 4, 1, file) != 1) return 1;
 
     return 0;
 }
 
 /*
  *  This function reads DIB header and writes data into DIB_header structure.
- *  Returns 1 if failed and 0 if succeed.
+ *  Returns 1 (error) or 2 (wrong values in header) if failed and 0 if succeed.
  */
 int readDIB(FILE *file, struct DIB_header *header) {
-    fread(&header->size, 4, 1, file);
-
+    if (fread(&header->size, 4, 1, file) != 1) return 1;
     if (header->size != 40) return 1;
 
-    fread(&header->width, 4, 1, file);
-    fread(&header->height, 4, 1, file);
-    fread(&header->planes, 2, 1, file);
-    fread(&header->bitcount, 2, 1, file);
-    fread(&header->compression, 4, 1, file);
+    if (fread(&header->width, 4, 1, file) != 1) return 1;
+    if (fread(&header->height, 4, 1, file) != 1) return 1;
+    if (fread(&header->planes, 2, 1, file) != 1) return 1;
 
-    if (header->compression != 0) return 1;
+    if (header->planes != 1) {
+        fprintf(stderr, "Wrong number of planes: %d.\n\n", header->planes);
+        return 2;
+    }
 
-    fread(&header->imagesize, 4, 1, file);
-    fread(&header->xppm, 4, 1, file);
-    fread(&header->yppm, 4, 1, file);
-    fread(&header->usedcolors, 4, 1, file);
-    fread(&header->importantcolors, 4, 1, file);
+    if (fread(&header->bitcount, 2, 1, file) != 1) return 1;
+    if (fread(&header->compression, 4, 1, file) != 1) return 1;
+
+    if (header->compression != 0) {
+        fprintf(stderr, "This file is compressed.\n"
+                        "Compressed files are not supported.\n\n");
+        return 2;
+    }
+
+    if (fread(&header->imagesize, 4, 1, file) != 1) return 1;
+    if (fread(&header->xppm, 4, 1, file) != 1) return 1;
+    if (fread(&header->yppm, 4, 1, file) != 1) return 1;
+    if (fread(&header->usedcolors, 4, 1, file) != 1) return 1;
+    if (fread(&header->importantcolors, 4, 1, file) != 1) return 1;
 
     return 0;
 }
@@ -118,9 +131,26 @@ int **readbmp(FILE *file, int *rows, int *cols) {
     struct BMP_header BMP;
     struct DIB_header DIB;
     struct color_table CT;
+    int returned;
 
-    if (readBMPh(file, &BMP) == 1) return NULL;
-    if (readDIB(file, &DIB) == 1) return NULL;
+    if ((returned = readBMPh(file, &BMP)) == 1) {
+        fprintf(stderr, "BMP header cannot be read correctly.\n\n");
+        return NULL;
+    }
+    else if (returned == 2) {
+        fprintf(stderr, "Data inside BMP header is not correct.\n\n");
+        return NULL;
+    }
+
+    if ((returned = readDIB(file, &DIB)) == 1) {
+        fprintf(stderr, "DIB header cannot be read correctly.\n\n");
+        return NULL;
+    }
+    else if (returned == 2) {
+        fprintf(stderr, "Data inside DIB header is not correct.\n\n");
+        return NULL;
+    }
+
 
     if (DIB.bitcount == 1) {
         *rows = DIB.height;
@@ -129,7 +159,7 @@ int **readbmp(FILE *file, int *rows, int *cols) {
     }
     else {
         fprintf(stderr, "This file has %d bits per pixel color depth. "
-                "I cannot process this kind of file yet.\n\n", DIB.bitcount);
+                        "This kind of files are not supported..\n\n", DIB.bitcount);
         return NULL;
     }
 }
