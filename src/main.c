@@ -185,12 +185,10 @@ int main(int argc, char **argv) {
 
         saveGen(generation, rows, cols, output);
         writeEndOfFile(GIFFile);
+	    
+	//cleanHead();
 
-//  NIE WIEM CO ZROBIĆ Z TYMI FUNKCJAMI, W MOJEJ WERSJI MAINA BYŁY,
-//  W MASTERZE JUŻ NIE, NIECH TO OGARNIE KTOŚ, KTO SIĘ NA TYM ZNA
-        //saveGen(generation, rows, cols, output);
-
-        //cleanTab(generation, rows);
+        cleanTab(generation, rows);
 
         return EXIT_SUCCESS;
     }
