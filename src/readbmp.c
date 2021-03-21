@@ -37,7 +37,7 @@ FILE *isbmp(char *filename) {
 int readBMPh (FILE *file, struct BMP_header *header) {
     if (fread(header->name, 1, 2, file) != 2) return 1;
 
-    if (header->name[0] == 'B' || header->name[1] != 'M') {
+    if (header->name[0] != 'B' || header->name[1] != 'M') {
         fprintf(stderr, "Wrong values in header field: 0x%X and 0x%X.\n"
                         "Instead of 0x42 and 0x4D.\n\n", header->name[0], header->name[1]);
         return 2;
