@@ -52,14 +52,21 @@ int **getPrimaryGen(int rows, int cols, FILE *in){
 		//Sprawdzenie czym jest wczytany znak, dla nowej linii inkrementuje licznik linii, dla spacji leci dalej, dla 0 lub 1 przypisuje do tablicy 
 		if( isspace(c) ){
 			if( c == '\n' ){
-				countLines++;
-				if( countColumns != cols ){
-					fprintf(stderr, "Declared size and number of elements are not the same\n");
-					cleanTab(tabOfInt, rows);
-					fclose(in);
-					exit(6);
+				if(( c = fgetc(in)) == '\n'){
+				//	fclose(in);
+					return tabOfInt;
 				}
-				countColumns = 0;
+				else{
+					ungetc(c, in);
+					countLines++;
+					if( countColumns != cols ){
+						fprintf(stderr, "Declared size and number of elements are not the same\n");
+						cleanTab(tabOfInt, rows);
+						fclose(in);
+						exit(6);
+					}
+					countColumns = 0;
+				}
 			}
 			else if( c == ' ' )
 				;
