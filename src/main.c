@@ -182,6 +182,7 @@ int main(int argc, char **argv) {
 
             writeToGIF(generation);
         }
+	free(dirname);
 
         saveGen(generation, rows, cols, output);
         writeEndOfFile();

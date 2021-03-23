@@ -44,6 +44,7 @@ char *checkDIR(char *dirName)
                     mkdir(path, 0777);
                     free(dirName);
                     free(stats3);
+		    free(number);
                     return path;
                 }
                 i++;
