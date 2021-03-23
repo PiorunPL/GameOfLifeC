@@ -128,8 +128,8 @@ int **onebpp(FILE *file, struct BMP_header BMP, struct DIB_header DIB) {
             if (fread(&tmp, 1, 1, file) != 1) return NULL;
 
             for (bit = 7, k = 0; bit >= 0 && j < DIB.width; bit--, j++) {
-                if ((byte[bit] & tmp) == pow(2, bit)) generation[i][j] = 0;
-                else generation[i][j] = 1;
+                if ((byte[bit] & tmp) == pow(2, bit)) generation[i][j] = 1;
+                else generation[i][j] = 0;
             }
             j--;
         }
@@ -168,6 +168,8 @@ int **readbmp(FILE *file, int *rows, int *cols) {
         fprintf(stderr, "Data inside DIB header is not correct.\n\n");
         return NULL;
     }
+
+    printf("filesize: %d\n", BMP.filesize);
 
 
     if (DIB.bitcount == 1) {

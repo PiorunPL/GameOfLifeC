@@ -84,8 +84,8 @@ void editBMP(int **map, int row, int col, char * path)
     fputc(0x4d, file);
 
     //Size of the BMP file (in bytes)
-    int RowSize = ((col * 8 + 31) / 32) * 4;
-    int BMPSize = 62 + 8 * row * RowSize;
+    int RowSize = ((col + 31) / 32) * 4;
+    int BMPSize = 62 + row * RowSize;
 
     char *hex = malloc(sizeof(char) * 8);
     decimalToHex(BMPSize, hex, 8);
@@ -118,7 +118,7 @@ void editBMP(int **map, int row, int col, char * path)
         fputc(0x00, file);
 
     //Width of bitmap in pixel
-    int widthInPix = col * 8;
+    int widthInPix = col;
     decimalToHex(widthInPix, hex, 8);
 
     hexByte[0] = 16 * hex[6] + hex[7];
@@ -130,7 +130,7 @@ void editBMP(int **map, int row, int col, char * path)
         fputc(hexByte[i], file);
 
     //Height of bitmap in pixel
-    int heightInPix = row * 8;
+    int heightInPix = row;
     decimalToHex(heightInPix, hex, 8);
 
     hexByte[0] = 16 * hex[6] + hex[7];
@@ -154,7 +154,7 @@ void editBMP(int **map, int row, int col, char * path)
         fputc(0x00, file);
 
     //size of the raw bitmap
-    int sizeRawBMP = 8 * row * RowSize;
+    int sizeRawBMP = row * RowSize;
     decimalToHex(sizeRawBMP, hex, 8);
 
     hexByte[0] = 16 * hex[6] + hex[7];
@@ -177,44 +177,35 @@ void editBMP(int **map, int row, int col, char * path)
     for (i = 0; i < 4; i++)
         fputc(0x00, file);
 
-    //colour 1 - green
+    //colour 1 - white
+    for (i = 0; i < 3; i++)
+        fputc(0xff, file);
+    fputc(0x00, file);
+
+    //colour 2 - green
     fputc(0x00,file);
     fputc(0xff,file);
     fputc(0x00,file);
     fputc(0x00,file);
 
-    //colour 2 - white
-    for (i = 0; i < 3; i++)
-        fputc(0xff, file);
-    fputc(0x00, file);
-
     //Including Map of Game of Life into the file(making squares 8x8 pixels)
-    for (i = 0; i < row; i++)
-    {
-        int j = 0;
-        for (j = 0; j < 8; j++)
-        {
-            int k = 0;
-            for (k = 0; k < RowSize; k++)
-            {
-                if (k >= col)
-                {
-                    fputc(0x00, file);
-                }
-                else
-                {
-                    if (map[row - i - 1][k] == 1)
-                    {
-                        fputc(0x00, file);
-                    }
-                    else
-                    {
-                        fputc(0xff, file);
-                    }
-                }
+
+    int j, bit, k;
+    unsigned char dec;
+
+    int bRowSize = RowSize * 8;
+
+    for (i = 0; i < row; i++) {
+        for (j = 0; j < bRowSize; j++) {
+            for (dec = 0, k = 0, bit = 7; bit >= 0 && k < 8; bit--, k++) {
+                if (j + bit < col) dec += map[row - 1 - i][j + bit] * pow(2, k);
+                else dec += 0;
             }
+            fputc(dec, file);
+            j += k - 1;
         }
     }
+
 
     fclose(file);
     free(hex);
