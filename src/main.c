@@ -10,8 +10,6 @@
 #include "fileOut.h"
 #include "fileGIF.h"
 
-int **randmap(int rows, int cols);   
-
 char *help = 
 "----------------------------------------------------------------\n"
 "NAME\n"
