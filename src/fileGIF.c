@@ -6,6 +6,29 @@
 #include "fileOut.h"
 #include "fileGIF.h"
 
+void initStreamList();
+void addToStreamList(int number);
+void mainCompressingFuction(int ** map);
+void streamListToByteList();
+int itemsInStreamList();
+void clearList();
+void initLZWList();
+int searchForCode(char * name);
+int addToList(char * name);
+void createGIF(char * dirName);
+void initGIFHeader(int width, int height);
+void writeGIFHeader();
+void writeImageDescriptor();
+void writeGraphicControlExtension();
+void writeImageData();
+void initImageData();
+void decimalToBin(int number, int digits, char * output);
+void cleanHead();
+void hexToByte(char * hex, char * hexByte, int number);
+int binToDecimal(char * bin, int digits);
+void clearStreamList();
+void cleanRest();
+
 typedef struct LogicalScreenDescriptor
 {
     int width;
@@ -89,6 +112,7 @@ static ImageData_t * image = NULL;
 static LZWList_t * LZWHead = NULL;
 static streamList_t * streamHead = NULL;
 static streamList_t * streamTail = NULL;
+static FILE * GIFFile;
 
 void initStreamList()
 {
@@ -174,7 +198,7 @@ void mainCompressingFuction(int ** map)
     free(buffor1);
 }
 
-void streamListToByteList(FILE * file)
+void streamListToByteList()
 {
     int lzwlistsize = 4;
     int bitsPerItem = 3;
@@ -219,7 +243,7 @@ void streamListToByteList(FILE * file)
                 {
                     //zapis całego bloku do pliku
                     for(l = 0; l < 256; l++)
-                        fputc(dataBlock[l], file);
+                        fputc(dataBlock[l], GIFFile);
                     dataBlock[0] = 0x00;
                     j = 1;
                 }     
@@ -250,7 +274,7 @@ void streamListToByteList(FILE * file)
 
             //zapis koncowego bloku
             for(l = 0; l < dataBlock[0]+1;l++)
-                fputc(dataBlock[l], file);
+                fputc(dataBlock[l], GIFFile);
             break;
         }
             
@@ -278,30 +302,6 @@ void clearList() //after using clean code
 {
     LZWList_t * act = LZWHead;
 
-    /*
-    int timesToClear = 0;
-    while(act != NULL)
-    {
-        if(act->index > 5)
-            timesToClear++;
-        act = act->next;
-    }
-
-
-    int i;
-    for(i = 0; i < timesToClear; i++)
-    {
-        act = LZWHead;
-        while(act->next->next!=NULL)
-            act = act->next;
-        free(act->next->code);
-        act->next->code = NULL;
-        free(act->next);
-        act->next = NULL;        
-    }
-
-    */
-
     do
     {
         act = act->next;
@@ -318,9 +318,6 @@ void clearList() //after using clean code
         free(act2);
         act2 = act;
     }
-    
-    //printf("Tu Jestem!");
-    //
 }
 
 void initLZWList()
@@ -406,7 +403,7 @@ int addToList(char * name)
     return 0;
 }
 
-FILE * createGIF(char * dirName)
+void createGIF(char * dirName)
 {
     char * fileName = "life.gif";
 
@@ -415,10 +412,8 @@ FILE * createGIF(char * dirName)
     strcat(path, "/");
     strcat(path, fileName);
 
-    FILE * fGIF = fopen(path, "w");
+    GIFFile = fopen(path, "w");
     free(path);
-
-    return fGIF;
 }
 
 void initGIFHeader(int width, int height)
@@ -512,13 +507,13 @@ void initGIFHeader(int width, int height)
     head->ID.packedField = 0x00; //local color table, sort flag, and more (we are not using it)
 }
 
-void writeGIFHeader(FILE * file)
+void writeGIFHeader()
 {
     int i;
 
     for(i = 0; i < 6; i++)
     {
-        fputc(head->header[i],file);
+        fputc(head->header[i],GIFFile);
     }
     
     //width
@@ -527,13 +522,13 @@ void writeGIFHeader(FILE * file)
     char * hexByte = malloc(sizeof(char)*3);
     hexToByte(hex, hexByte, 2);
     for(i = 0; i < 2; i++)
-        fputc(hexByte[i], file);
+        fputc(hexByte[i], GIFFile);
 
     //height
     decimalToHex(head->LSD.height, hex, 4);
     hexToByte(hex, hexByte, 2);
     for(i = 0; i < 2; i++)
-        fputc(hexByte[i], file);
+        fputc(hexByte[i], GIFFile);
 
     free(hex);
     free(hexByte);
@@ -544,7 +539,7 @@ void writeGIFHeader(FILE * file)
     decimalToHex(decimal, hex, 2);
     hexByte = malloc(sizeof(char)*2);
     hexToByte(hex, hexByte, 1);
-    fputc(hexByte[0], file);
+    fputc(hexByte[0], GIFFile);
 
     free(hex);
     free(hexByte);
@@ -554,7 +549,7 @@ void writeGIFHeader(FILE * file)
     decimalToHex(head->LSD.backgroundColorIndex, hex, 2);
     hexByte = malloc(sizeof(char)*2);
     hexToByte(hex, hexByte, 1);
-    fputc(hexByte[0], file);
+    fputc(hexByte[0], GIFFile);
 
     free(hex);
     free(hexByte);
@@ -564,7 +559,7 @@ void writeGIFHeader(FILE * file)
     decimalToHex(head->LSD.pxAscpectRatio, hex, 2);
     hexByte = malloc(sizeof(char)*2);
     hexToByte(hex, hexByte, 1);
-    fputc(hexByte[0], file);
+    fputc(hexByte[0], GIFFile);
 
     free(hex);
     free(hexByte);
@@ -572,20 +567,20 @@ void writeGIFHeader(FILE * file)
     //GlobalColorTable
     //color 1
     for(i = 0; i < 3; i++)
-        fputc(head->GCT.color1[i], file);
+        fputc(head->GCT.color1[i], GIFFile);
 
     //color 2
     for(i = 0; i < 3; i++)
-        fputc(head->GCT.color2[i], file);
+        fputc(head->GCT.color2[i], GIFFile);
 
 //AplicationBlock
     //extensionName
     for(i = 0; i < 3; i++)
-        fputc(head->AEB.extentionName[i], file);
+        fputc(head->AEB.extentionName[i], GIFFile);
 
     //ApplicationName
     for(i = 0; i < 11; i++)
-        fputc(head->AEB.applicationName[i], file);
+        fputc(head->AEB.applicationName[i], GIFFile);
 
     //Length of Data Sub-block
     hex = malloc(sizeof(char)*3);
@@ -593,13 +588,13 @@ void writeGIFHeader(FILE * file)
     hexByte = malloc(sizeof(char)*2);
     hexToByte(hex, hexByte, 1);
 
-    fputc(hexByte[0], file);
+    fputc(hexByte[0], GIFFile);
 
     free(hex);
     free(hexByte);
 
     //Always 1
-    fputc(0x01, file);
+    fputc(0x01, GIFFile);
 
     //Number of loops (0 means infinite)
     hex = malloc(sizeof(char)*5);
@@ -608,28 +603,28 @@ void writeGIFHeader(FILE * file)
     hexToByte(hex, hexByte, 2);
 
     for(i = 0; i < 2; i++)
-        fputc(hexByte[i], file);
+        fputc(hexByte[i], GIFFile);
 
     free(hex);
     free(hexByte);
 
     //Terminator of data sub-block
-    fputc(0x00, file);
+    fputc(0x00, GIFFile);
 }
 
-void writeImageDescriptor(FILE * file)
+void writeImageDescriptor()
 {
     //image separator
-    fputc(head->ID.imageSeparator, file);
+    fputc(head->ID.imageSeparator, GIFFile);
 
     //position of image to left
     int i;
     for(i = 0; i < 2; i++)
-        fputc(head->ID.imageLeft[i], file);
+        fputc(head->ID.imageLeft[i], GIFFile);
 
     //position of image to top
     for(i = 0; i < 2; i++)
-        fputc(head->ID.imageTop[i], file);
+        fputc(head->ID.imageTop[i], GIFFile);
 
     //width of image
     char * hex = malloc(sizeof(char)*5);
@@ -638,35 +633,35 @@ void writeImageDescriptor(FILE * file)
     hexToByte(hex, hexByte, 2);
 
     for(i = 0; i < 2; i++)
-        fputc(hexByte[i], file);
+        fputc(hexByte[i], GIFFile);
 
     //height of image
     decimalToHex(head->ID.imageHeight, hex, 4);
     hexToByte(hex, hexByte, 2);
 
     for(i = 0; i < 2; i++)
-        fputc(hexByte[i], file);
+        fputc(hexByte[i], GIFFile);
     
     free(hex);
     free(hexByte);
 
     //packed field
-    fputc(head->ID.packedField, file);
+    fputc(head->ID.packedField, GIFFile);
 }
 
-void writeGraphicControlExtension(FILE * file)
+void writeGraphicControlExtension()
 {
     int i;
     
     //Header of GCE
     for(i =0; i < 2; i++)
-        fputc(head->GCE.extensionHeader[i], file);
+        fputc(head->GCE.extensionHeader[i], GIFFile);
 
     //byteSize
-    fputc(head->GCE.byteSize, file);
+    fputc(head->GCE.byteSize, GIFFile);
 
     //packedField
-    fputc(head->GCE.packedField, file);
+    fputc(head->GCE.packedField, GIFFile);
 
     //Delay Time
     char * hex = malloc(sizeof(char)*5);
@@ -675,26 +670,26 @@ void writeGraphicControlExtension(FILE * file)
     hexToByte(hex, hexByte, 2);
 
     for(i = 0; i < 2; i++)
-        fputc(hexByte[i], file);
+        fputc(hexByte[i], GIFFile);
 
     free(hex);
     free(hexByte);
 
     //transpartent color index
-    fputc(head->GCE.transparentColorIndex, file);
+    fputc(head->GCE.transparentColorIndex, GIFFile);
     
     //Terminator
-    fputc(0x00, file);
+    fputc(0x00, GIFFile);
 }
 
-void writeImageData(FILE * file)
+void writeImageData()
 {
-    fputc(image->LZWMinimumCodeSize, file);
+    fputc(image->LZWMinimumCodeSize, GIFFile);
 
-    streamListToByteList(file);
+    streamListToByteList();
 
     //terminator
-    fputc(0x00, file);
+    fputc(0x00, GIFFile);
 
 
     //DODAĆ CZYSZCZENIE TABEL!
@@ -706,12 +701,12 @@ void initImageData()
     image->LZWMinimumCodeSize = 0x02;
 }
 
-void writeEndOfFile(FILE * file)
+void writeEndOfFile()
 {
     //trailer (ending file)
-    fputc(0x3b, file);
-    fclose(file);
-
+    fputc(0x3b, GIFFile);
+    fclose(GIFFile);
+    cleanRest();
     cleanHead();
 }
 
@@ -738,6 +733,7 @@ void cleanHead()
     free(head->ID.imageLeft);
     free(head->ID.imageTop);
     free(head);
+    free(image);
 }
 
 void hexToByte(char * hex, char * hexByte, int number)
@@ -767,3 +763,35 @@ int binToDecimal(char * bin, int digits)
     return sum;
 }
 
+void GIFInit(char *dirname, int cols, int rows)
+{
+    createGIF(dirname);
+    initGIFHeader(cols, rows);
+    writeGIFHeader(GIFFile);
+    initImageData();
+    initLZWList();
+}
+
+void writeToGIF(int **map)
+{
+    mainCompressingFuction(map);       
+    writeGraphicControlExtension();
+    writeImageDescriptor();
+    writeImageData();
+    clearList();
+    clearStreamList();
+}
+
+void cleanRest()
+{
+    LZWList_t * act = LZWHead;
+
+    while(LZWHead !=NULL)
+    {
+        free(LZWHead->code);
+        LZWHead = LZWHead->next;
+        free(act);
+        act = LZWHead;
+    }
+    
+}

@@ -166,19 +166,10 @@ int main(int argc, char **argv) {
 //  if nothing goes wrong inside functions, program finishes with success
     if (generation != NULL) {
         checkDIR(dirname);
-    
-        FILE * GIFFile = createGIF(dirname);
-        initGIFHeader(cols, rows);
-        writeGIFHeader(GIFFile);
-        initImageData();
-        initLZWList();
-        mainCompressingFuction(generation);       
 
-        writeGraphicControlExtension(GIFFile);
-        writeImageDescriptor(GIFFile);
-        writeImageData(GIFFile);
-        clearList();
-        clearStreamList();
+        GIFInit(dirname, cols, rows);
+        
+        writeToGIF(generation);
     
         char * path = createBMP(0,iterations, dirname);
         editBMP(generation, rows, cols, path);
@@ -188,17 +179,11 @@ int main(int argc, char **argv) {
             path = createBMP(i+1, iterations, dirname);
             editBMP(generation, rows, cols, path);
 
-            mainCompressingFuction(generation);       
-
-            writeGraphicControlExtension(GIFFile);
-            writeImageDescriptor(GIFFile);
-            writeImageData(GIFFile);
-            clearList();
-            clearStreamList();
+            writeToGIF(generation);
         }
 
         saveGen(generation, rows, cols, output);
-        writeEndOfFile(GIFFile);
+        writeEndOfFile();
 	    
 	//cleanHead();
 
