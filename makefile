@@ -121,3 +121,6 @@ endif
 ifneq (,$(wildcard ./obj))
 	rm -rd ./obj
 endif
+ifneq (,$(wildcard ./result))
+	rm -rd ./result
+endif
