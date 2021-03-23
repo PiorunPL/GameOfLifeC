@@ -9,23 +9,76 @@
 #include "fileOut.h"
 
 //checking if dir exist, if not creating new one
-void checkDIR(char * dirName)
+char *checkDIR(char *dirName)
 {
     struct stat stats;
-    stat(dirName, &stats);
-
+    stat("result", &stats);
     if (S_ISDIR(stats.st_mode))
     {
-        //folder exists
+        struct stat stats1;
+        stat(dirName, &stats1);
+
+        if (S_ISDIR(stats1.st_mode))
+        {
+            int i = 1;
+            do
+            {
+                struct stat *stats3;
+                stats3 = malloc(sizeof(struct stat));
+                int j = i;
+                int m = log10(i) + 1;
+                int n = m;
+                char *number = malloc(sizeof(char) * (m + 1));
+                while (j != 0)
+                {
+                    number[m - 1] = j % 10 + '0';
+                    j = j / 10;
+                    m--;
+                }
+                number[n] = '\0';
+                char *path = malloc(sizeof(char) * (strlen(dirName) + strlen(number) + 1));
+                strcpy(path, dirName);
+                strcat(path, number);
+                if(stat(path, stats3)==-1)
+                {
+                    mkdir(path, 0777);
+                    free(dirName);
+                    free(stats3);
+                    return path;
+                }
+                i++;
+
+                free(number);
+                free(path);
+                free(stats3);
+                stats3 = NULL;
+
+            } while (1 == 1);
+        }
+        else
+        {
+            mkdir(dirName, 0777);
+            return dirName;
+        }
     }
     else
-    {  
-        mkdir(dirName, 0777);
+    {
+        mkdir("result", 0777);
+        return checkDIR(dirName);
     }
 }
 
+char *changeDirName(char *dirName)
+{
+    char *path = malloc(sizeof(char) * (strlen(dirName) + strlen("result") + 2));
+    strcpy(path, "result");
+    strcat(path, "/");
+    strcat(path, dirName);
+    return path;
+}
+
 //Creating BMP File with specific name based on iteration
-char * createBMP(int iteration, int maxIteration, char *dirName)
+char *createBMP(int iteration, int maxIteration, char *dirName)
 {
     int iterationWorking = iteration;
 
@@ -72,10 +125,9 @@ char * createBMP(int iteration, int maxIteration, char *dirName)
 }
 
 //Writing into BMP File
-void editBMP(int **map, int row, int col, char * path)
+void editBMP(int **map, int row, int col, char *path)
 {
     int pixelNumber = row * col;
-   
 
     FILE *file = fopen(path, "w");
 
@@ -178,10 +230,10 @@ void editBMP(int **map, int row, int col, char * path)
         fputc(0x00, file);
 
     //colour 1 - green
-    fputc(0x00,file);
-    fputc(0xff,file);
-    fputc(0x00,file);
-    fputc(0x00,file);
+    fputc(0x00, file);
+    fputc(0xff, file);
+    fputc(0x00, file);
+    fputc(0x00, file);
 
     //colour 2 - white
     for (i = 0; i < 3; i++)
@@ -225,7 +277,7 @@ void editBMP(int **map, int row, int col, char * path)
 void decimalToHex(int number, char *result, int digits)
 {
     int remainder;
-    int i = digits-1;
+    int i = digits - 1;
 
     while (number != 0)
     {
@@ -251,24 +303,26 @@ void decimalToHex(int number, char *result, int digits)
 * cols - ilość kolumn
 * *filename - ścieżka do pliku, do którego zapisać
 */
-void saveGen(int **gen, int rows, int cols, char *filename){
-    
+void saveGen(int **gen, int rows, int cols, char *filename)
+{
+
     FILE *out = fopen(filename, "w");
     char firstline[32];
     sprintf(firstline, "%d %d\n", rows, cols);
-    fputs( firstline, out );
+    fputs(firstline, out);
     int i, j;
-    for(i=0; i<rows; i++){
-        for(j=0; j<cols; j++){
+    for (i = 0; i < rows; i++)
+    {
+        for (j = 0; j < cols; j++)
+        {
             char actual[4];
-            sprintf( actual, "%d", gen[i][j]);
-            fputs( actual, out );
-            if( j == (cols-1) )
-                fputs( "\n", out );
+            sprintf(actual, "%d", gen[i][j]);
+            fputs(actual, out);
+            if (j == (cols - 1))
+                fputs("\n", out);
             else
-                fputs( " ", out );                                                 
+                fputs(" ", out);
         }
     }
     fclose(out);
 }
-
