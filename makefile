@@ -30,20 +30,20 @@ endif
 #   BIN FILES
 #
 
-$(BIN)moore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o $(OBJ)randmap.o $(OBJ)readbmp.o $(OBJ)fileGIF.o
-	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o -lm $(OBJ)randmap.o $(OBJ)readbmp.o $(OBJ)fileGIF.o
+$(BIN)moore: dirs $(OBJ)main.o $(OBJ)fileIn.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o $(OBJ)randmap.o $(OBJ)readbmp.o $(OBJ)fileGIF.o
+	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)fileIn.o $(OBJ)game.o $(OBJ)moore.o $(OBJ)fileOut.o -lm $(OBJ)randmap.o $(OBJ)readbmp.o $(OBJ)fileGIF.o
 
-$(BIN)tormoore: dirs $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o $(OBJ)randmap.o $(OBJ)readbmp.o $(OBJ)fileGIF.o
-	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)filesops.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o -lm $(OBJ)randmap.o $(OBJ)readbmp.o $(OBJ)fileGIF.o
+$(BIN)tormoore: dirs $(OBJ)main.o $(OBJ)fileIn.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o $(OBJ)randmap.o $(OBJ)readbmp.o $(OBJ)fileGIF.o
+	$(CC) $(BINOPTS) $(OBJ)main.o $(OBJ)fileIn.o $(OBJ)game.o $(OBJ)tormoore.o $(OBJ)fileOut.o -lm $(OBJ)randmap.o $(OBJ)readbmp.o $(OBJ)fileGIF.o
 
 #
 #   OBJECT FILES
 #
 
-$(OBJ)main.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h
+$(OBJ)main.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h $(SRC)fileIn.h $(SRC)fileGIF.h $(SRC)readbmp.h $(SRC)randmap.h
 	$(CC) $(OBJOPTS) 
 
-$(OBJ)filesops.o: $(SRC)filesops.c
+$(OBJ)fileIn.o: $(SRC)fileIn.c $(SRC)fileIn.h 
 	$(CC) $(OBJOPTS)
 
 $(OBJ)game.o: $(SRC)game.c $(SRC)nbrhood.h
@@ -52,7 +52,7 @@ $(OBJ)game.o: $(SRC)game.c $(SRC)nbrhood.h
 $(OBJ)moore.o: $(SRC)moore.c
 	$(CC) $(OBJOPTS)
 
-$(OBJ)fileOut.o: $(SRC)fileOut.c
+$(OBJ)fileOut.o: $(SRC)fileOut.c $(SRC)fileOut.h
 	$(CC) $(OBJOPTS) -lm
 
 $(OBJ)tormoore.o: $(SRC)tormoore.c
@@ -61,10 +61,10 @@ $(OBJ)tormoore.o: $(SRC)tormoore.c
 $(OBJ)randmap.o: $(SRC)randmap.c
 	$(CC) $(OBJOPTS)
 	
-$(OBJ)fileGIF.o: $(SRC)fileGIF.c
+$(OBJ)fileGIF.o: $(SRC)fileGIF.c $(SRC)fileGIF.h $(SRC)fileOut.h
 	$(CC) $(OBJOPTS) -lm
 
-$(OBJ)readbmp.o: $(SRC)readbmp.c $(SRC)readbmp.h 
+$(OBJ)readbmp.o: $(SRC)readbmp.c 
 	$(CC) $(OBJOPTS) -lm
 
 #
@@ -73,16 +73,17 @@ $(OBJ)readbmp.o: $(SRC)readbmp.c $(SRC)readbmp.h
 
 debug: $(BIN)dmoore $(BIN)dtormoore
 
-$(BIN)dmoore: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o $(OBJ)drandmap.o $(OBJ)dreadbmp.o $(OBJ)dfileGIF.o
-	$(CC) $(BINOPTS) $(DEBUGOPTS) $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o -lm $(OBJ)drandmap.o $(OBJ)dreadbmp.o $(OBJ)dfileGIF.o
+$(BIN)dmoore: dirs $(OBJ)dmain.o $(OBJ)dfileIn.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o $(OBJ)drandmap.o $(OBJ)dreadbmp.o $(OBJ)dfileGIF.o
+	$(CC) $(BINOPTS) $(DEBUGOPTS) $(OBJ)dmain.o $(OBJ)dfileIn.o $(OBJ)dgame.o $(OBJ)dmoore.o $(OBJ)dfileOut.o -lm $(OBJ)drandmap.o $(OBJ)dreadbmp.o $(OBJ)dfileGIF.o
 
-$(BIN)dtormoore: dirs $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o $(OBJ)drandmap.o $(OBJ)dreadbmp.o $(OBJ)dfileGIF.o
-	$(CC) $(BINOPTS) $(DEBUGOPTS) $(OBJ)dmain.o $(OBJ)dfilesops.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o -lm $(OBJ)drandmap.o $(OBJ)dreadbmp.o $(OBJ)dfileGIF.o
+$(BIN)dtormoore: dirs $(OBJ)dmain.o $(OBJ)dfileIn.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o $(OBJ)drandmap.o $(OBJ)dreadbmp.o $(OBJ)dfileGIF.o
+	$(CC) $(BINOPTS) $(DEBUGOPTS) $(OBJ)dmain.o $(OBJ)dfileIn.o $(OBJ)dgame.o $(OBJ)dtormoore.o $(OBJ)dfileOut.o -lm $(OBJ)drandmap.o $(OBJ)dreadbmp.o $(OBJ)dfileGIF.o
 
-$(OBJ)dmain.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h
+
+$(OBJ)dmain.o: $(SRC)main.c $(SRC)game.h $(SRC)fileOut.h $(SRC)fileIn.h $(SRC)fileGIF.h $(SRC)readbmp.h $(SRC)randmap.h
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
 
-$(OBJ)dfilesops.o: $(SRC)filesops.c
+$(OBJ)dfileIn.o: $(SRC)fileIn.c $(SRC)fileIn.h 
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
 
 $(OBJ)dgame.o: $(SRC)game.c $(SRC)nbrhood.h
@@ -91,7 +92,7 @@ $(OBJ)dgame.o: $(SRC)game.c $(SRC)nbrhood.h
 $(OBJ)dmoore.o: $(SRC)moore.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
 
-$(OBJ)dfileOut.o: $(SRC)fileOut.c
+$(OBJ)dfileOut.o: $(SRC)fileOut.c $(SRC)fileOut.h
 	$(CC) $(OBJOPTS) $(DEBUGOPTS) -lm
 
 $(OBJ)dtormoore.o: $(SRC)tormoore.c
@@ -99,12 +100,13 @@ $(OBJ)dtormoore.o: $(SRC)tormoore.c
 
 $(OBJ)drandmap.o: $(SRC)randmap.c
 	$(CC) $(OBJOPTS) $(DEBUGOPTS)
-
-$(OBJ)dfileGIF.o: $(SRC)fileGIF.c $(SRC)fileGIF.h
+	
+$(OBJ)dfileGIF.o: $(SRC)fileGIF.c $(SRC)fileGIF.h $(SRC)fileOut.h
 	$(CC) $(OBJOPTS) $(DEBUGOPTS) -lm
 
-$(OBJ)dreadbmp.o: $(SRC)readbmp.c $(SRC)readbmp.c 
+$(OBJ)dreadbmp.o: $(SRC)readbmp.c 
 	$(CC) $(OBJOPTS) $(DEBUGOPTS) -lm
+
 
 #
 #   CLEAN

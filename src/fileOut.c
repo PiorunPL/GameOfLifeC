@@ -244,3 +244,31 @@ void decimalToHex(int number, char *result, int digits)
         result[i--] = 0;
     }
 }
+
+/*
+* Funkcja zapisuje stan generacji do pliku
+* rows - ilość wierszy
+* cols - ilość kolumn
+* *filename - ścieżka do pliku, do którego zapisać
+*/
+void saveGen(int **gen, int rows, int cols, char *filename){
+    
+    FILE *out = fopen(filename, "w");
+    char firstline[32];
+    sprintf(firstline, "%d %d\n", rows, cols);
+    fputs( firstline, out );
+    int i, j;
+    for(i=0; i<rows; i++){
+        for(j=0; j<cols; j++){
+            char actual[4];
+            sprintf( actual, "%d", gen[i][j]);
+            fputs( actual, out );
+            if( j == (cols-1) )
+                fputs( "\n", out );
+            else
+                fputs( " ", out );                                                 
+        }
+    }
+    fclose(out);
+}
+

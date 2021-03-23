@@ -1,3 +1,6 @@
+#ifndef FILEGIF_H
+#define FILEGIF_H
+
 #include <stdio.h>
 
 void initStreamList();
@@ -22,3 +25,5 @@ void cleanHead();
 void hexToByte(char * hex, char * hexByte, int number);
 int binToDecimal(char * bin, int digits);
 void clearStreamList();
+
+#endif

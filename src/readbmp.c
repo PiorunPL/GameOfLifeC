@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "readbmp.h"
-
 /*
  *  This function checks if filename includes '.bmp', which is a clue
  *  it could be BMP file. It returns file pointer in case of success.
@@ -30,6 +28,13 @@ FILE *isbmp(char *filename) {
     return file;
 }
 
+struct BMP_header {
+    unsigned char name[2];
+    unsigned int filesize;
+    int garbage;
+    unsigned int offset;
+};
+
 /*
  *  This fuction reads BMP header and writes data into BMP_header structure.
  *  Returns 1 (error) or 2 (wrong values in header) if failed and 0 if succeed.
@@ -49,6 +54,20 @@ int readBMPh (FILE *file, struct BMP_header *header) {
 
     return 0;
 }
+
+struct DIB_header {
+    unsigned int size;
+    int width;
+    int height;
+    unsigned short planes;
+    unsigned short bitcount;
+    unsigned int compression;
+    unsigned int imagesize;
+    unsigned int xppm;
+    unsigned int yppm;
+    unsigned int usedcolors;
+    unsigned int importantcolors;
+};
 
 /*
  *  This function reads DIB header and writes data into DIB_header structure.
@@ -130,7 +149,6 @@ int **onebpp(FILE *file, struct BMP_header BMP, struct DIB_header DIB) {
 int **readbmp(FILE *file, int *rows, int *cols) {
     struct BMP_header BMP;
     struct DIB_header DIB;
-    struct color_table CT;
     int returned;
 
     if ((returned = readBMPh(file, &BMP)) == 1) {
