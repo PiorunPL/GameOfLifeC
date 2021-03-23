@@ -165,7 +165,8 @@ int main(int argc, char **argv) {
 //  graphical files are created here
 //  if nothing goes wrong inside functions, program finishes with success
     if (generation != NULL) {
-        checkDIR(dirname);
+        dirname = changeDirName(dirname);
+        dirname = checkDIR(dirname);
 
         GIFInit(dirname, cols, rows);
         
@@ -181,6 +182,7 @@ int main(int argc, char **argv) {
 
             writeToGIF(generation);
         }
+	free(dirname);
 
         saveGen(generation, rows, cols, output);
         writeEndOfFile();
