@@ -39,7 +39,11 @@ char *help =
 "                               by default it is 'life'\n"
 "   -o name-of-output-file      file, where the last generation is saved\n"
 "                               in the map-file format,\n"
-"                               by default it is 'data/lastgens/map'\n\n"
+"                               by default it is 'data/lastgens/map'\n"
+"   --bmp                       with this non-argument option passed,\n"
+"                               program creates bmp file\n"
+"   --gif                       with this non-argument option passed,\n"
+"                               program creates gif file\n\n"
 "AUTHORS\n"
 "   Jakub Maciejewski, Michal Ziober, Sebastian Gorka,\n"
 "   students of Warsaw University of Technology.\n"
@@ -56,9 +60,17 @@ int main(int argc, char **argv) {
     char *randdimensions = NULL;
     int i;
 	int rows = -1, cols = -1;
+    int dobmp = 0, dogif = 0;
+
+    struct option long_options[] = {
+        {"bmp", no_argument,  NULL,   'b'},
+        {"gif", no_argument,  NULL,   'f'}
+    };
+
+    int long_index = 0;
 
 //  collects command line options and arguments
-    while ((opt = getopt(argc, argv, "m:i:d:o:r:")) != -1) {
+    while ((opt = getopt_long(argc, argv, "m:i:d:o:r:b:f", long_options, NULL)) != -1) {
         switch (opt) {
         case 'm':
             map = optarg;
@@ -75,6 +87,12 @@ int main(int argc, char **argv) {
         case 'r':
             randdimensions = optarg;
             break;
+        case 'b':
+            dobmp = 1;
+            break;
+        case 'f':
+            dogif = 1;
+            break;
         default:
             fprintf(stderr, help, progname, progname, progname);
             return EXIT_FAILURE;
@@ -84,6 +102,12 @@ int main(int argc, char **argv) {
 
     FILE *in;
     int **generation;
+
+//  no arguments were passed to the program -> print usage and finish
+    if (optind == 1) {
+            fprintf(stderr, help, progname, progname, progname);
+            return EXIT_SUCCESS;
+    }
 
 //  checks if dimensions for randomly generated map are
 //  provided and if yes, checks if they are correct
@@ -168,26 +192,35 @@ int main(int argc, char **argv) {
         dirname = changeDirName(dirname);
         dirname = checkDIR(dirname);
 
-        GIFInit(dirname, cols, rows);
-        
-        writeToGIF(generation);
+        if (dogif == 1) {
+            fprintf(stdout, "Creating GIF file.\n");
+            GIFInit(dirname, cols, rows);
+            writeToGIF(generation);
+        }
     
-        char * path = createBMP(0,iterations, dirname);
-        editBMP(generation, rows, cols, path);
+        char * path;
+        if (dobmp == 1) {
+            fprintf(stdout, "Creating %d BMP file(s).\n", iterations);
+            path = createBMP(0,iterations, dirname);
+            editBMP(generation, rows, cols, path);
+        }
 
         for (i = 0; i < iterations; i++) {
             play(generation, rows, cols);
             path = createBMP(i+1, iterations, dirname);
-            editBMP(generation, rows, cols, path);
-
-            writeToGIF(generation);
+            if (dobmp == 1) editBMP(generation, rows, cols, path);
+            if (dogif == 1) writeToGIF(generation);
         }
-	free(dirname);
+
+        fprintf(stdout, "All %d graphical output files were placed in %s.\n", i + 1, dirname);
+
+        free(dirname);
 
         saveGen(generation, rows, cols, output);
-        writeEndOfFile();
+
+        if (dogif == 1) writeEndOfFile();
 	    
-	//cleanHead();
+        //cleanHead();
 
         cleanTab(generation, rows);
 

@@ -25,6 +25,9 @@ endif
 ifeq (,$(wildcard ./obj))
 	mkdir ./obj
 endif
+ifeq (,$(wildcard ./data/lastgens))
+	mkdir ./data/lastgens
+endif
 
 #
 #   BIN FILES

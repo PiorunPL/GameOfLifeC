@@ -169,9 +169,6 @@ int **readbmp(FILE *file, int *rows, int *cols) {
         return NULL;
     }
 
-    printf("filesize: %d\n", BMP.filesize);
-
-
     if (DIB.bitcount == 1) {
         *rows = DIB.height;
         *cols = DIB.width;
