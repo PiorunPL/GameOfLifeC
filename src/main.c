@@ -192,14 +192,14 @@ int main(int argc, char **argv) {
         dirname = changeDirName(dirname);
         dirname = checkDIR(dirname);
 
-        if (dogif == 1) {
+        if (dogif == 1 || (dobmp == 0 && dogif == 0)) {
             fprintf(stdout, "Creating GIF file.\n");
             GIFInit(dirname, cols, rows);
             writeToGIF(generation);
         }
     
         char * path;
-        if (dobmp == 1) {
+        if (dobmp == 1 || (dobmp == 0 && dogif == 0)) {
             fprintf(stdout, "Creating %d BMP file(s).\n", iterations);
             path = createBMP(0,iterations, dirname);
             editBMP(generation, rows, cols, path);
@@ -208,17 +208,17 @@ int main(int argc, char **argv) {
         for (i = 0; i < iterations; i++) {
             play(generation, rows, cols);
             path = createBMP(i+1, iterations, dirname);
-            if (dobmp == 1) editBMP(generation, rows, cols, path);
-            if (dogif == 1) writeToGIF(generation);
+            if (dobmp == 1 || (dobmp == 0 && dogif == 0)) editBMP(generation, rows, cols, path);
+            if (dogif == 1 || (dobmp == 0 && dogif == 0)) writeToGIF(generation);
         }
 
-        fprintf(stdout, "All %d graphical output files were placed in %s.\n", i + 1, dirname);
+        fprintf(stdout, "%d graphical output files were placed in %s.\n", i * dobmp + dogif, dirname);
 
         free(dirname);
 
         saveGen(generation, rows, cols, output);
 
-        if (dogif == 1) writeEndOfFile();
+        if (dogif == 1 || (dobmp == 0 && dogif == 0)) writeEndOfFile();
 	    
         //cleanHead();
 
