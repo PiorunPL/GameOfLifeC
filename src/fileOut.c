@@ -262,7 +262,6 @@ void editBMP(int **map, int row, int col, char *path)
 
     fclose(file);
     free(hex);
-    free(path);
 }
 
 //changing decimal number into hex number

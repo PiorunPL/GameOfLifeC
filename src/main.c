@@ -203,6 +203,7 @@ int main(int argc, char **argv) {
             fprintf(stdout, "Creating %d BMP file(s).\n", iterations);
             path = createBMP(0,iterations, dirname);
             editBMP(generation, rows, cols, path);
+	    free(path);
         }
 
         for (i = 0; i < iterations; i++) {
@@ -212,7 +213,7 @@ int main(int argc, char **argv) {
             if (dogif == 1 || (dobmp == 0 && dogif == 0)) writeToGIF(generation);
 	    free(path);
         }
-	    
+
 	if (dobmp == 0 && dogif == 0) fprintf(stdout, "%d graphical output files were placed in %s.\n", i + 1, dirname);
 	else fprintf(stdout, "%d graphical output files were placed in %s.\n", i * dobmp + dogif, dirname);
 
