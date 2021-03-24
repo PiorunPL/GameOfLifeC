@@ -210,6 +210,7 @@ int main(int argc, char **argv) {
             path = createBMP(i+1, iterations, dirname);
             if (dobmp == 1 || (dobmp == 0 && dogif == 0)) editBMP(generation, rows, cols, path);
             if (dogif == 1 || (dobmp == 0 && dogif == 0)) writeToGIF(generation);
+	    free(path);
         }
 	    
 	if (dobmp == 0 && dogif == 0) fprintf(stdout, "%d graphical output files were placed in %s.\n", i + 1, dirname);
