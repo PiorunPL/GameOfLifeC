@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
             if (dogif == 1 || (dobmp == 0 && dogif == 0)) writeToGIF(generation);
         }
 	    
-	if (dobmp == 0 && dogif == 0) fprintf(stdout, "%d graphical output files were placed in %s.\n", i * dobmp + dogif, dirname);
+	if (dobmp == 0 && dogif == 0) fprintf(stdout, "%d graphical output files were placed in %s.\n", i + 1, dirname);
 	else fprintf(stdout, "%d graphical output files were placed in %s.\n", i * dobmp + dogif, dirname);
 
         free(dirname);
