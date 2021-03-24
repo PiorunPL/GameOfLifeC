@@ -255,7 +255,13 @@ void streamListToByteList()
         lzwlistsize++;
         //obliczenie ilosci bitow na pojedynczy kod
         if(lzwlistsize == (pow(2, bitsPerItem)))
-            bitsPerItem++;   
+            bitsPerItem++;
+
+        if(number == 4)
+        {
+            bitsPerItem = 3;
+            lzwlistsize = 5;
+        }   
 
         if(number != 5)
         {
